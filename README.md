@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nestora — Flats for Sale (Demo)
 
-## Getting Started
+A responsive, deploy-ready Next.js demo for browsing and managing flats for sale.
 
-First, run the development server:
+## Features
+
+- **Home** with featured listings and marketplace highlights
+- **Listings** with search, filters (city, BHK, facing, price, status, furnishing), and sorting
+- **Flat detail pages** with photo gallery, bedrooms, facing, amenities, nearby schools / colleges / hospitals / transport
+- **Enquiry form** (standalone + on detail/contact pages)
+- **Favorites** shortlist (browser storage)
+- **Admin portal** to add, edit, delete, and reset flats; review enquiries
+- **About** and **Contact** pages
+- Mobile-friendly responsive layout
+
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Admin login (demo)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Username: `admin`
+- Password: `admin123`
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command        | Description              |
+|----------------|--------------------------|
+| `npm run dev`  | Start local development  |
+| `npm run build`| Production build         |
+| `npm start`    | Serve production build   |
+| `npm run lint` | Run ESLint               |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push this repo to GitHub / GitLab / Bitbucket
+2. Import the project in [Vercel](https://vercel.com)
+3. Use defaults (Next.js detected automatically)
+4. Deploy
 
-## Deploy on Vercel
+Or with Vercel CLI:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm i -g vercel
+vercel
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Data note
+
+Flats, favorites, and enquiries are stored in the browser (`localStorage` / `sessionStorage`) so the demo works without a database. Reset demo data anytime from the admin dashboard.
+
+For a production system, replace the storage helpers in `src/lib/storage.ts` with a real API and database.
