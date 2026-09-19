@@ -3,6 +3,7 @@ import { Figtree, Syne } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ChatBot } from "@/components/ChatBot";
 import "./globals.css";
 
 const body = Figtree({
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <ChatBot />
         </AppProvider>
       </body>
     </html>
