@@ -1,9 +1,13 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { AdminGuard } from "@/components/AdminGuard";
+import { BusyButton } from "@/components/BusyButton";
 import { useApp } from "@/context/AppContext";
 import { formatPrice, statusLabel } from "@/lib/storage";
+import { dueLeads } from "@/lib/leads";
+import { roleCan } from "@/lib/staff-roles";
 
 export default function AdminDashboardPage() {
   return (
@@ -20,12 +24,49 @@ function Dashboard() {
     logout,
     deleteFlat,
     resetData,
-    clearEnquiries,
+    staffRole,
   } = useApp();
+  const canWriteFlat = roleCan(staffRole, "writeFlat");
+  const canDeleteFlat = roleCan(staffRole, "deleteFlat");
+  const canManageStaff = roleCan(staffRole, "manageStaff");
+  const canReset = roleCan(staffRole, "resetInventory");
+  const canReadLeads = roleCan(staffRole, "readEnquiries");
+  const canWriteLead = roleCan(staffRole, "writeEnquiry");
+  const canPublishSocial = roleCan(staffRole, "publishSocial");
+  const [query, setQuery] = useState("");
+  const [city, setCity] = useState("");
+  const [status, setStatus] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [pending, setPending] = useState<string | null>(null);
+
+  const runAction = async (key: string, action: () => Promise<void>, fallback: string) => {
+    if (pending) return;
+    setPending(key);
+    setActionError("");
+    try {
+      await action();
+    } catch (error: unknown) {
+      setActionError(error instanceof Error ? error.message : fallback);
+    } finally {
+      setPending(null);
+    }
+  };
 
   const available = flats.filter((f) => f.status === "available").length;
   const underOffer = flats.filter((f) => f.status === "under-offer").length;
   const sold = flats.filter((f) => f.status === "sold").length;
+  const cities = useMemo(
+    () => [...new Set(flats.map((flat) => flat.city))].sort(),
+    [flats],
+  );
+  const shown = flats.filter((flat) => {
+    const haystack = `${flat.title} ${flat.area} ${flat.city} ${flat.projectName ?? ""}`.toLowerCase();
+    if (query && !haystack.includes(query.trim().toLowerCase())) return false;
+    if (city && flat.city !== city) return false;
+    if (status && flat.status !== status) return false;
+    return true;
+  });
+  const dueCount = dueLeads(enquiries).length;
 
   return (
     <div className="container-shell section-space !pt-10">
@@ -37,9 +78,26 @@ function Dashboard() {
           </p>
         </div>
         <div className="mobile-stack w-full sm:w-auto">
-          <Link href="/admin/flats/new" className="btn btn-primary btn-full-mobile">
-            Add new flat
-          </Link>
+          {canWriteFlat && (
+            <Link href="/admin/flats/new" className="btn btn-primary btn-full-mobile">
+              Add new flat
+            </Link>
+          )}
+          {canReadLeads && (
+            <Link href="/admin/leads" className="btn btn-secondary btn-full-mobile">
+              {canWriteLead && dueCount > 0 ? `Leads (${dueCount} due)` : "Leads"}
+            </Link>
+          )}
+          {canManageStaff && (
+            <Link href="/admin/staff" className="btn btn-secondary btn-full-mobile">
+              Staff
+            </Link>
+          )}
+          {canPublishSocial && (
+            <Link href="/admin/social" className="btn btn-secondary btn-full-mobile">
+              Social
+            </Link>
+          )}
           <button type="button" className="btn btn-secondary btn-full-mobile" onClick={logout}>
             Log out
           </button>
@@ -56,27 +114,69 @@ function Dashboard() {
       <section className="mb-10">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-2xl sm:text-3xl">Inventory</h2>
-          <button
-            type="button"
+          {canReset && (
+          <BusyButton
+            pending={pending === "reset"}
+            pendingLabel="Resettingâ€¦"
             className="btn btn-ghost text-sm"
             onClick={() => {
-              if (confirm("Reset all flats and enquiries to demo seed data?")) {
-                resetData();
+              if (
+                !confirm(
+                  "Replace listings with the demo seed, delete flats added after the seed, and clear every enquiry?",
+                )
+              ) {
+                return;
               }
+              void runAction("reset", resetData, "Could not reset listings");
             }}
           >
             Reset demo data
-          </button>
+          </BusyButton>
+          )}
+        </div>
+        {actionError && <p className="mb-4 text-sm text-danger">{actionError}</p>}
+
+        <div className="mb-4 grid gap-3 sm:grid-cols-3">
+          <div className="field">
+            <label htmlFor="inventoryQuery">Search inventory</label>
+            <input
+              id="inventoryQuery"
+              value={query}
+              placeholder="Title, area, project"
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="inventoryCity">City</label>
+            <select id="inventoryCity" value={city} onChange={(e) => setCity(e.target.value)}>
+              <option value="">All cities</option>
+              {cities.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="inventoryStatus">Status</label>
+            <select id="inventoryStatus" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">All statuses</option>
+              <option value="available">Available</option>
+              <option value="under-offer">Under offer</option>
+              <option value="sold">Sold</option>
+            </select>
+          </div>
         </div>
 
         <div className="admin-card-list">
-          {flats.map((flat) => (
+          {shown.map((flat) => (
             <article key={flat.id} className="surface p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <h3 className="font-display text-xl leading-snug">{flat.title}</h3>
                   <p className="mt-1 text-sm text-ink-soft">
-                    {flat.area}, {flat.city} · {flat.bedrooms} BHK
+                    {flat.area}, {flat.city}
+                    {flat.bedrooms != null ? ` Â· ${flat.bedrooms} BHK` : ""}
                   </p>
                 </div>
                 <span className={`chip status-${flat.status}`}>
@@ -90,21 +190,28 @@ function Dashboard() {
                 <Link href={`/flats/${flat.id}`} className="btn btn-secondary btn-full-mobile !py-2.5 text-sm">
                   View
                 </Link>
-                <Link
-                  href={`/admin/flats/${flat.id}/edit`}
-                  className="btn btn-primary btn-full-mobile !py-2.5 text-sm"
-                >
-                  Edit
-                </Link>
-                <button
-                  type="button"
-                  className="btn btn-danger btn-full-mobile !py-2.5 text-sm"
-                  onClick={() => {
-                    if (confirm(`Delete "${flat.title}"?`)) deleteFlat(flat.id);
-                  }}
-                >
-                  Delete
-                </button>
+                {canWriteFlat && (
+                  <Link
+                    href={`/admin/flats/${flat.id}/edit`}
+                    className="btn btn-primary btn-full-mobile !py-2.5 text-sm"
+                  >
+                    Edit
+                  </Link>
+                )}
+                {canDeleteFlat && (
+                  <BusyButton
+                    pending={pending === `flat:${flat.id}`}
+                    pendingLabel="Deletingâ€¦"
+                    className="btn btn-danger btn-full-mobile !py-2.5 text-sm"
+                    onClick={() => {
+                      if (confirm(`Delete "${flat.title}"?`)) {
+                        void runAction(`flat:${flat.id}`, () => deleteFlat(flat.id), "Could not delete this listing");
+                      }
+                    }}
+                  >
+                    Delete
+                  </BusyButton>
+                )}
               </div>
             </article>
           ))}
@@ -123,14 +230,14 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {flats.map((flat) => (
+              {shown.map((flat) => (
                 <tr key={flat.id} className="border-b border-line/70 last:border-0">
                   <td className="px-4 py-3">
                     <p className="font-semibold">{flat.title}</p>
                     <p className="text-xs text-ink-soft">{flat.area}</p>
                   </td>
                   <td className="px-4 py-3">{flat.city}</td>
-                  <td className="px-4 py-3">{flat.bedrooms}</td>
+                  <td className="px-4 py-3">{flat.bedrooms ?? "â€”"}</td>
                   <td className="px-4 py-3">{formatPrice(flat.price)}</td>
                   <td className="px-4 py-3">
                     <span className={`chip status-${flat.status}`}>
@@ -142,21 +249,28 @@ function Dashboard() {
                       <Link href={`/flats/${flat.id}`} className="text-sage font-semibold">
                         View
                       </Link>
-                      <Link
-                        href={`/admin/flats/${flat.id}/edit`}
-                        className="text-ink font-semibold"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        type="button"
-                        className="font-semibold text-danger"
-                        onClick={() => {
-                          if (confirm(`Delete "${flat.title}"?`)) deleteFlat(flat.id);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      {canWriteFlat && (
+                        <Link
+                          href={`/admin/flats/${flat.id}/edit`}
+                          className="text-ink font-semibold"
+                        >
+                          Edit
+                        </Link>
+                      )}
+                      {canDeleteFlat && (
+                        <BusyButton
+                          pending={pending === `flat:${flat.id}`}
+                          pendingLabel="Deletingâ€¦"
+                          className="inline-flex items-center gap-2 font-semibold text-danger disabled:cursor-progress disabled:opacity-70"
+                          onClick={() => {
+                            if (confirm(`Delete "${flat.title}"?`)) {
+                              void runAction(`flat:${flat.id}`, () => deleteFlat(flat.id), "Could not delete this listing");
+                            }
+                          }}
+                        >
+                          Delete
+                        </BusyButton>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -166,67 +280,21 @@ function Dashboard() {
         </div>
       </section>
 
-      <section>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-3xl">Enquiries ({enquiries.length})</h2>
-          {enquiries.length > 0 && (
-            <button
-              type="button"
-              className="btn btn-danger !py-2"
-              onClick={() => {
-                if (confirm("Clear all enquiries?")) clearEnquiries();
-              }}
-            >
-              Clear enquiries
-            </button>
-          )}
-        </div>
-        {enquiries.length === 0 ? (
-          <div className="surface p-6 text-ink-soft">No enquiries yet.</div>
-        ) : (
-          <div className="grid gap-4">
-            {enquiries.map((enq) => (
-              <article key={enq.id} className="surface p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="mb-2 flex flex-wrap gap-2">
-                      <span
-                        className={`chip ${
-                          enq.intent === "sell" ? "chip-gold" : "chip-sage"
-                        }`}
-                      >
-                        {enq.intent === "sell" ? "Seller lead" : "Buyer lead"}
-                      </span>
-                    </div>
-                    <h3 className="font-display text-2xl">{enq.name}</h3>
-                    <p className="text-sm text-ink-soft">
-                      {enq.email} · {enq.phone}
-                    </p>
-                  </div>
-                  <p className="text-xs text-ink-soft">
-                    {new Date(enq.createdAt).toLocaleString()}
-                  </p>
-                </div>
-                <p className="mt-3 text-sm">
-                  <span className="font-semibold">Location:</span>{" "}
-                  {[enq.area, enq.city].filter(Boolean).join(", ") || "Not specified"}
-                </p>
-                <p className="mt-1 text-sm">
-                  <span className="font-semibold">Listing:</span>{" "}
-                  {enq.flatTitle || "General request"}
-                </p>
-                {enq.preferredVisit && (
-                  <p className="mt-1 text-sm">
-                    <span className="font-semibold">Preferred visit:</span>{" "}
-                    {enq.preferredVisit}
-                  </p>
-                )}
-                <p className="mt-3 leading-relaxed text-ink-soft">{enq.message}</p>
-              </article>
-            ))}
+      {canReadLeads && (
+        <section className="surface flex flex-wrap items-center justify-between gap-3 p-5">
+          <div>
+            <h2 className="font-display text-3xl">Leads ({enquiries.length})</h2>
+            {canWriteLead && (
+              <p className="mt-1 text-sm text-ink-soft">
+                {dueCount === 0 ? "No leads are due." : `${dueCount} ${dueCount === 1 ? "lead is" : "leads are"} due.`}
+              </p>
+            )}
           </div>
-        )}
-      </section>
+          <Link href="/admin/leads" className="btn btn-primary">
+            Open leads
+          </Link>
+        </section>
+      )}
     </div>
   );
 }
@@ -239,3 +307,4 @@ function Stat({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+

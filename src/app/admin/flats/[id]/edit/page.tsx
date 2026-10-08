@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AdminGuard } from "@/components/AdminGuard";
+import { RoleGate } from "@/components/RoleGate";
 import { FlatForm } from "@/components/FlatForm";
 import { useApp } from "@/context/AppContext";
 import type { FlatInput } from "@/lib/types";
@@ -10,18 +12,32 @@ import type { FlatInput } from "@/lib/types";
 export default function EditFlatPage() {
   return (
     <AdminGuard>
-      <EditFlat />
+      <RoleGate action="writeFlat">
+        <EditFlat />
+      </RoleGate>
     </AdminGuard>
   );
 }
 
 function EditFlat() {
   const params = useParams<{ id: string }>();
-  const { getFlat, updateFlat, ready } = useApp();
+  const { getFlat, updateFlat, ready, ensureFlatDetails } = useApp();
   const router = useRouter();
   const flat = getFlat(params.id);
+  const [detailsReady, setDetailsReady] = useState(false);
 
-  if (!ready) {
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    void ensureFlatDetails(params.id).finally(() => {
+      if (!cancelled) setDetailsReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, params.id, ensureFlatDetails]);
+
+  if (!ready || !detailsReady) {
     return (
       <div className="container-shell section-space">
         <p className="text-ink-soft">Loading…</p>
@@ -40,8 +56,8 @@ function EditFlat() {
     );
   }
 
-  const onSubmit = (data: FlatInput) => {
-    updateFlat(flat.id, data);
+  const onSubmit = async (data: FlatInput) => {
+    await updateFlat(flat.id, data);
     router.push(`/flats/${flat.id}`);
   };
 

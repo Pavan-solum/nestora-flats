@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ListingImage } from "@/components/ListingImage";
 
 export default function AboutPage() {
   return (
@@ -19,7 +19,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-[var(--shadow)]">
-            <Image
+            <ListingImage
               src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80"
               alt="Apartment exterior"
               fill

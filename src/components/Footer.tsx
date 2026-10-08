@@ -16,12 +16,22 @@ export function Footer() {
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-gold-soft">
             Explore
           </p>
-          <div className="flex flex-col gap-2 text-sm text-white/75">
-            <Link href="/explore">Browse by city</Link>
-            <Link href="/explore/bengaluru">Bengaluru areas</Link>
-            <Link href="/enquiry?intent=buy">Buy with Nestora</Link>
-            <Link href="/enquiry?intent=sell">Sell with Nestora</Link>
-            <Link href="/admin/login">Agent admin</Link>
+          <div className="flex flex-col text-sm text-white/75">
+            <Link href="/explore" className="inline-flex min-h-11 items-center">
+              Browse by city
+            </Link>
+            <Link href="/explore/bengaluru" className="inline-flex min-h-11 items-center">
+              Bengaluru areas
+            </Link>
+            <Link href="/enquiry?intent=buy" className="inline-flex min-h-11 items-center">
+              Buy with Nestora
+            </Link>
+            <Link href="/enquiry?intent=sell" className="inline-flex min-h-11 items-center">
+              Sell with Nestora
+            </Link>
+            <Link href="/admin/login" className="inline-flex min-h-11 items-center">
+              Agent admin
+            </Link>
           </div>
         </div>
         <div>
@@ -30,8 +40,7 @@ export function Footer() {
           </p>
           <p className="text-sm leading-relaxed text-white/70">
             Buyers and sellers contact Nestora agents — never each other
-            directly on this site. Demo admin:{" "}
-            <span className="text-white">admin / admin123</span>
+            directly on this site.
           </p>
         </div>
       </div>

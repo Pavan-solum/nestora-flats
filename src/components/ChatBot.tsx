@@ -28,10 +28,16 @@ export function ChatBot() {
   const [typing, setTyping] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastScrollAt = useRef(0);
 
   useEffect(() => {
     if (!open) return;
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    const wait = Math.max(0, 250 - (Date.now() - lastScrollAt.current));
+    const timer = window.setTimeout(() => {
+      lastScrollAt.current = Date.now();
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, wait);
+    return () => window.clearTimeout(timer);
   }, [messages, typing, open]);
 
   useEffect(() => {

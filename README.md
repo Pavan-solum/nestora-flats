@@ -22,10 +22,9 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Admin login (demo)
+## Admin login
 
-- Username: `admin`
-- Password: `admin123`
+Sign in at `/admin/login` with a Supabase email and password. The account must pass the existing `is_staff` check. Create or mark that user in the Supabase dashboard.
 
 ## Scripts
 

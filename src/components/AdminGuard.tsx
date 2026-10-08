@@ -5,17 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { ready, isAdmin } = useApp();
+  const { ready, sessionChecked, isAdmin } = useApp();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (ready && !isAdmin && pathname !== "/admin/login") {
+    if (sessionChecked && ready && !isAdmin && pathname !== "/admin/login") {
       router.replace("/admin/login");
     }
-  }, [ready, isAdmin, pathname, router]);
+  }, [ready, sessionChecked, isAdmin, pathname, router]);
 
-  if (!ready) {
+  if (!ready || !sessionChecked) {
     return (
       <div className="container-shell section-space">
         <p className="text-ink-soft">Loading admin…</p>

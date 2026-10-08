@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { FlatFilters } from "@/lib/types";
 import { FACING_OPTIONS } from "@/lib/seed";
 import { CITY_OPTIONS, getAreasForCity } from "@/lib/locations";
@@ -12,6 +13,32 @@ type Props = {
 
 export function FlatFilters({ filters, onChange, onReset }: Props) {
   const areas = filters.city ? getAreasForCity(filters.city) : [];
+  const [query, setQuery] = useState(filters.query);
+  const [minPrice, setMinPrice] = useState(filters.minPrice);
+  const [maxPrice, setMaxPrice] = useState(filters.maxPrice);
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+
+  useEffect(() => {
+    setQuery(filters.query);
+    setMinPrice(filters.minPrice);
+    setMaxPrice(filters.maxPrice);
+  }, [filters.query, filters.minPrice, filters.maxPrice]);
+
+  useEffect(() => {
+    const current = filtersRef.current;
+    if (
+      current.query === query &&
+      current.minPrice === minPrice &&
+      current.maxPrice === maxPrice
+    ) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      onChange({ ...filtersRef.current, query, minPrice, maxPrice });
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [query, minPrice, maxPrice, onChange]);
 
   const set = (key: keyof FlatFilters, value: string) => {
     if (key === "city") {
@@ -35,8 +62,8 @@ export function FlatFilters({ filters, onChange, onReset }: Props) {
           <input
             id="query"
             placeholder="Title, amenities..."
-            value={filters.query}
-            onChange={(e) => set("query", e.target.value)}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
           />
         </div>
         <div className="field">
@@ -134,8 +161,8 @@ export function FlatFilters({ filters, onChange, onReset }: Props) {
             id="minPrice"
             type="number"
             placeholder="e.g. 4000000"
-            value={filters.minPrice}
-            onChange={(e) => set("minPrice", e.target.value)}
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
           />
         </div>
         <div className="field">
@@ -144,8 +171,8 @@ export function FlatFilters({ filters, onChange, onReset }: Props) {
             id="maxPrice"
             type="number"
             placeholder="e.g. 15000000"
-            value={filters.maxPrice}
-            onChange={(e) => set("maxPrice", e.target.value)}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
           />
         </div>
       </div>

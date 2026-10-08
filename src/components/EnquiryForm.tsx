@@ -4,6 +4,9 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import type { EnquiryIntent } from "@/lib/types";
 import { CITY_OPTIONS, getAreasForCity } from "@/lib/locations";
+import { FieldError, invalidField } from "@/components/FieldError";
+import { BusyButton } from "@/components/BusyButton";
+import { firstFieldError, validateEnquiry, type FieldErrors } from "@/lib/validation";
 
 type Props = {
   defaultFlatId?: string;
@@ -31,6 +34,8 @@ export function EnquiryForm({
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const areas = getAreasForCity(city);
 
@@ -52,27 +57,35 @@ export function EnquiryForm({
     }
   }, [defaultFlatId, flats]);
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (sending) return;
     setError("");
-    if (!name.trim() || !email.trim() || !phone.trim() || !message.trim()) {
-      setError("Please fill in name, email, phone, and message for our agent.");
-      return;
-    }
+    const errors = validateEnquiry({ name, email, phone, message, intent });
+    setFieldErrors(errors);
+    if (firstFieldError(errors)) return;
     const flat = flats.find((f) => f.id === flatId);
-    submitEnquiry({
-      intent,
-      flatId: intent === "buy" && flatId ? flatId : undefined,
-      flatTitle: intent === "buy" ? flat?.title : undefined,
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      preferredVisit:
-        intent === "buy" && preferredVisit ? preferredVisit : undefined,
-      city,
-      area: area || undefined,
-      message: message.trim(),
-    });
+    setSending(true);
+    try {
+      await submitEnquiry({
+        intent,
+        flatId: intent === "buy" && flatId ? flatId : undefined,
+        flatTitle: intent === "buy" ? flat?.title : undefined,
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        preferredVisit:
+          intent === "buy" && preferredVisit ? preferredVisit : undefined,
+        city,
+        area: area || undefined,
+        message: message.trim(),
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send this enquiry.");
+      return;
+    } finally {
+      setSending(false);
+    }
     setSent(true);
     setName("");
     setEmail("");
@@ -120,19 +133,20 @@ export function EnquiryForm({
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <button
               type="button"
-              className={`chip !justify-center !py-2.5 ${intent === "buy" ? "chip-sage" : ""}`}
+              className={`chip inline-flex min-h-11 !justify-center !py-2.5 ${intent === "buy" ? "chip-sage" : ""}`}
               onClick={() => setIntent("buy")}
             >
               Buy a flat
             </button>
             <button
               type="button"
-              className={`chip !justify-center !py-2.5 ${intent === "sell" ? "chip-sage" : ""}`}
+              className={`chip inline-flex min-h-11 !justify-center !py-2.5 ${intent === "sell" ? "chip-sage" : ""}`}
               onClick={() => setIntent("sell")}
             >
               Sell my flat
             </button>
           </div>
+          <FieldError id="intent" errors={fieldErrors} />
         </div>
 
         {intent === "buy" && (
@@ -201,7 +215,9 @@ export function EnquiryForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
+            {...invalidField("name", fieldErrors)}
           />
+          <FieldError id="name" errors={fieldErrors} />
         </div>
         <div className="field">
           <label htmlFor="phone">Phone</label>
@@ -210,7 +226,9 @@ export function EnquiryForm({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+91 ..."
+            {...invalidField("phone", fieldErrors)}
           />
+          <FieldError id="phone" errors={fieldErrors} />
         </div>
         <div className="field">
           <label htmlFor="email">Email</label>
@@ -220,7 +238,9 @@ export function EnquiryForm({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
+            {...invalidField("email", fieldErrors)}
           />
+          <FieldError id="email" errors={fieldErrors} />
         </div>
         {intent === "buy" && (
           <div className="field">
@@ -249,15 +269,22 @@ export function EnquiryForm({
                 ? "Budget range, BHK, facing preference, timeline..."
                 : "BHK, location, expected price, documents readiness..."
             }
+            {...invalidField("message", fieldErrors)}
           />
+          <FieldError id="message" errors={fieldErrors} />
         </div>
       </div>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button type="submit" className="btn btn-primary btn-full-mobile w-full sm:w-auto">
+      <BusyButton
+        type="submit"
+        pending={sending}
+        pendingLabel="Sending…"
+        className="btn btn-primary btn-full-mobile w-full sm:w-auto"
+      >
         Contact Nestora agent
-      </button>
+      </BusyButton>
     </form>
   );
 }

@@ -4,7 +4,6 @@ import { SEED_FLATS } from "./seed";
 const FLATS_KEY = "nestora_flats_v2";
 const ENQUIRIES_KEY = "nestora_enquiries_v2";
 const FAVORITES_KEY = "nestora_favorites_v1";
-const AUTH_KEY = "nestora_admin_auth_v1";
 
 function canUseStorage() {
   return typeof window !== "undefined";
@@ -63,17 +62,6 @@ export function loadFavorites(): string[] {
 export function saveFavorites(ids: string[]) {
   if (!canUseStorage()) return;
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
-}
-
-export function isAdminAuthenticated(): boolean {
-  if (!canUseStorage()) return false;
-  return sessionStorage.getItem(AUTH_KEY) === "true";
-}
-
-export function setAdminAuthenticated(value: boolean) {
-  if (!canUseStorage()) return;
-  if (value) sessionStorage.setItem(AUTH_KEY, "true");
-  else sessionStorage.removeItem(AUTH_KEY);
 }
 
 export function formatPrice(value: number) {
