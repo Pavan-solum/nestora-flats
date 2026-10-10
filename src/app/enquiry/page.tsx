@@ -26,13 +26,13 @@ function EnquiryContent() {
         <div className="mt-4 flex flex-wrap gap-2">
           <Link
             href="/enquiry?intent=buy"
-            className={`chip ${defaultIntent === "buy" ? "chip-sage" : ""}`}
+            className={`chip inline-flex min-h-11 items-center ${defaultIntent === "buy" ? "chip-sage" : ""}`}
           >
             I want to buy
           </Link>
           <Link
             href="/enquiry?intent=sell"
-            className={`chip ${defaultIntent === "sell" ? "chip-sage" : ""}`}
+            className={`chip inline-flex min-h-11 items-center ${defaultIntent === "sell" ? "chip-sage" : ""}`}
           >
             I want to sell
           </Link>

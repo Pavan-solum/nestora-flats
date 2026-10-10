@@ -5,13 +5,14 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FlatCard } from "@/components/FlatCard";
 import { FlatFilters } from "@/components/FlatFilters";
+import { CardSkeleton } from "@/components/Skeletons";
 import { useApp } from "@/context/AppContext";
 import { emptyFilters, filterFlats } from "@/lib/filters";
 import type { FlatFilters as Filters } from "@/lib/types";
 import { getCityByName, slugify } from "@/lib/locations";
 
 function ListingsContent() {
-  const { flats, ready } = useApp();
+  const { flats, ready, loadError } = useApp();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [sort, setSort] = useState("newest");
@@ -31,7 +32,7 @@ function ListingsContent() {
     const sorted = [...filtered];
     if (sort === "price-asc") sorted.sort((a, b) => a.price - b.price);
     else if (sort === "price-desc") sorted.sort((a, b) => b.price - a.price);
-    else if (sort === "area-desc") sorted.sort((a, b) => b.carpetArea - a.carpetArea);
+    else if (sort === "area-desc") sorted.sort((a, b) => (b.carpetArea ?? 0) - (a.carpetArea ?? 0));
     else sorted.sort((a, b) => +new Date(b.listedAt) - +new Date(a.listedAt));
     return sorted;
   }, [flats, filters, sort]);
@@ -92,7 +93,11 @@ function ListingsContent() {
 
       <div className="mt-6 mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <p className="text-sm text-ink-soft">
-          {ready ? `${results.length} listing${results.length === 1 ? "" : "s"}` : "Loading…"}
+          {loadError
+            ? loadError
+            : ready
+              ? `${results.length} listing${results.length === 1 ? "" : "s"}`
+              : "Loading listings"}
         </p>
         <div className="field w-full !flex-col gap-2 sm:w-auto sm:!flex-row sm:!items-center">
           <label htmlFor="sort" className="!mb-0 whitespace-nowrap">
@@ -113,9 +118,9 @@ function ListingsContent() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {results.map((flat) => (
-          <FlatCard key={flat.id} flat={flat} />
-        ))}
+        {!ready
+          ? Array.from({ length: 6 }, (_, index) => <CardSkeleton key={index} />)
+          : results.map((flat) => <FlatCard key={flat.id} flat={flat} />)}
       </div>
 
       {ready && results.length === 0 && (
@@ -136,7 +141,11 @@ export default function ListingsPage() {
     <Suspense
       fallback={
         <div className="container-shell section-space">
-          <p className="text-ink-soft">Loading listings…</p>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }, (_, index) => (
+              <CardSkeleton key={index} />
+            ))}
+          </div>
         </div>
       }
     >

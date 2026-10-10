@@ -21,7 +21,53 @@ const imgs = {
   metro: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1200&q=80",
 };
 
+export const MARS_MOUNT_MAP_URL =
+  "https://maps.google.com/maps/search/Mars%20Mount/@12.920149803161621,77.53801727294922,17z?hl=en";
+
 export const SEED_FLATS: Flat[] = [
+  {
+    id: "flat-mars-mount",
+    title: "Mars Mount",
+    projectName: "MARS MOUNT",
+    description:
+      "Apartment at Mars Mount on 15th Cross Road. 1,410 sq.ft, east facing, with OC and CC approval and an A-Katha. The building has 124 units, each with independent walls. Amenities include a modular kitchen, gated security, gym, swimming pool, and club house.",
+    price: 13500000,
+    location: "15th Cross Road, Mars Mount",
+    city: "Bengaluru",
+    area: "JP Nagar",
+    bedrooms: null,
+    bathrooms: null,
+    balconies: null,
+    carpetArea: 1410,
+    facing: "East",
+    floor: null,
+    totalFloors: null,
+    ageYears: null,
+    furnishing: null,
+    amenities: [
+      "Modular Kitchen",
+      "Gated Security",
+      "Gym",
+      "Swimming Pool",
+      "Club House",
+    ],
+    nearbySchools: [],
+    nearbyColleges: [],
+    nearbyHospitals: [],
+    nearbyTransport: [],
+    images: [imgs.living, imgs.kitchen, imgs.exterior, imgs.garden],
+    status: "available",
+    featured: true,
+    listedAt: "2026-10-01T10:00:00.000Z",
+    updatedAt: "2026-10-01T10:00:00.000Z",
+    ocCcApproved: true,
+    khata: "A-Katha",
+    totalUnits: 124,
+    independentWalls: true,
+    mapUrl: MARS_MOUNT_MAP_URL,
+    latitude: 12.920149803161621,
+    longitude: 77.53801727294922,
+  },
   {
     id: "flat-001",
     title: "Skyline Residences — 3 BHK Corner Flat",
@@ -655,6 +701,9 @@ export const SEED_FLATS: Flat[] = [
 ];
 
 export const AMENITY_OPTIONS = [
+  "Modular Kitchen",
+  "Gated Security",
+  "Club House",
   "Clubhouse",
   "Swimming Pool",
   "Gym",
@@ -707,8 +756,3 @@ export const FACING_OPTIONS = [
 export { CITY_OPTIONS } from "./locations";
 
 export const DEFAULT_IMAGES = [imgs.living, imgs.kitchen, imgs.bedroom];
-
-export const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
-};

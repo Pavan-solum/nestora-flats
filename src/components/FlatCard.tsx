@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ListingImage } from "@/components/ListingImage";
 import { useApp } from "@/context/AppContext";
 import type { Flat } from "@/lib/types";
 import { formatPrice, statusLabel } from "@/lib/storage";
@@ -11,13 +11,13 @@ export function FlatCard({ flat }: { flat: Flat }) {
   const liked = favorites.includes(flat.id);
 
   return (
-    <article className="surface group overflow-hidden transition duration-300 hover:-translate-y-1">
+    <article className="surface overflow-hidden transition duration-200 hover:border-sage">
       <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
+        <ListingImage
           src={flat.images[0]}
           alt={flat.title}
           fill
-          className="object-cover transition duration-500 group-hover:scale-105"
+          className="object-cover"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
@@ -46,10 +46,9 @@ export function FlatCard({ flat }: { flat: Flat }) {
           </p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
-          <span className="chip">{flat.bedrooms} BHK</span>
-          <span className="chip">{flat.carpetArea} sq.ft</span>
-          <span className="chip">{flat.facing} facing</span>
-          <span className="chip">{flat.furnishing}</span>
+          {flat.projectName && <span className="chip chip-sage">{flat.projectName}</span>}
+          {flat.carpetArea != null && <span className="chip">{flat.carpetArea} sq.ft</span>}
+          {flat.facing && <span className="chip">{flat.facing} facing</span>}
         </div>
         <div className="mobile-stack pt-1">
           <Link

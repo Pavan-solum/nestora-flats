@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AdminGuard } from "@/components/AdminGuard";
+import { RoleGate } from "@/components/RoleGate";
 import { FlatForm } from "@/components/FlatForm";
 import { useApp } from "@/context/AppContext";
 import type { FlatInput } from "@/lib/types";
@@ -10,7 +11,9 @@ import type { FlatInput } from "@/lib/types";
 export default function NewFlatPage() {
   return (
     <AdminGuard>
-      <NewFlat />
+      <RoleGate action="writeFlat">
+        <NewFlat />
+      </RoleGate>
     </AdminGuard>
   );
 }
@@ -19,8 +22,8 @@ function NewFlat() {
   const { addFlat } = useApp();
   const router = useRouter();
 
-  const onSubmit = (data: FlatInput) => {
-    const flat = addFlat(data);
+  const onSubmit = async (data: FlatInput) => {
+    const flat = await addFlat(data);
     router.push(`/flats/${flat.id}`);
   };
 

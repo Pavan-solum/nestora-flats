@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import dynamic from "next/dynamic";
 import { Figtree, Syne } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ChatBot } from "@/components/ChatBot";
 import "./globals.css";
+
+const ChatBot = dynamic(() =>
+  import("@/components/ChatBot").then((mod) => mod.ChatBot),
+);
 
 const body = Figtree({
   subsets: ["latin"],

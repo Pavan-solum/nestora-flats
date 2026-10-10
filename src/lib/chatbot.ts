@@ -64,7 +64,7 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(admin|login|password|dashboard)\b/i,
     reply: {
-      text: "Nestora agents manage inventory from the admin dashboard. Demo login: username admin, password admin123.",
+      text: "Nestora staff manage inventory from the admin dashboard. Sign in with the staff email from Supabase.",
       links: [{ label: "Admin login", href: "/admin/login" }],
     },
   },

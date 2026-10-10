@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+import { ListingImage } from "@/components/ListingImage";
 
 export function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const [active, setActive] = useState(0);
@@ -10,13 +10,13 @@ export function ImageGallery({ images, title }: { images: string[]; title: strin
   return (
     <div className="space-y-3">
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[var(--shadow)] sm:aspect-[16/10] sm:rounded-[1.4rem]">
-        <Image
+        <ListingImage
           src={current}
           alt={`${title} photo ${active + 1}`}
           fill
+          eager
           className="object-cover"
           sizes="(max-width: 900px) 100vw, 60vw"
-          priority
         />
       </div>
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 sm:pb-0">
@@ -29,7 +29,7 @@ export function ImageGallery({ images, title }: { images: string[]; title: strin
               active === index ? "border-sage" : "border-transparent opacity-80 hover:opacity-100"
             }`}
           >
-            <Image src={src} alt="" fill className="object-cover" sizes="120px" />
+            <ListingImage src={src} alt="" fill className="object-cover" sizes="120px" />
           </button>
         ))}
       </div>

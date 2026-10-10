@@ -30,7 +30,9 @@ export function filterFlats(flats: Flat[], filters: FlatFilters) {
         flat.city,
         flat.area,
         flat.location,
-        flat.facing,
+        flat.facing ?? "",
+        flat.projectName ?? "",
+        flat.khata ?? "",
         ...flat.amenities,
       ]
         .join(" ")
