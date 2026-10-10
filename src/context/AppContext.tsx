@@ -151,6 +151,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
               nearbyColleges: data.nearby_colleges ?? [],
               nearbyHospitals: data.nearby_hospitals ?? [],
               nearbyTransport: data.nearby_transport ?? [],
+              mapUrl: data.map_url ?? flat.mapUrl ?? null,
+              latitude: data.latitude ?? flat.latitude ?? null,
+              longitude: data.longitude ?? flat.longitude ?? null,
             }
           : flat,
       ),

@@ -1,5 +1,10 @@
 import Link from "next/link";
 import { EnquiryForm } from "@/components/EnquiryForm";
+import {
+  googleMapsDirectionsUrl,
+  googleMapsEmbedUrl,
+  NESTORA_OFFICE,
+} from "@/lib/maps";
 
 export default function ContactPage() {
   return (
@@ -28,9 +33,43 @@ export default function ContactPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-ink-soft">Office</p>
-              <p className="mt-1 font-semibold">
-                4th Floor, Horizon Plaza, MG Road, Bengaluru
-              </p>
+              <p className="mt-1 font-semibold">{NESTORA_OFFICE.label}</p>
+              <div className="map-actions !mt-3">
+                <a
+                  href={googleMapsDirectionsUrl(
+                    NESTORA_OFFICE.latitude,
+                    NESTORA_OFFICE.longitude,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="map-link map-link--solid"
+                >
+                  View on map
+                </a>
+                <a
+                  href={googleMapsDirectionsUrl(
+                    NESTORA_OFFICE.latitude,
+                    NESTORA_OFFICE.longitude,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="map-link"
+                >
+                  Get directions
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="surface overflow-hidden p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-ink-soft">Office map</p>
+            <div className="map-embed mt-3">
+              <iframe
+                title="Nestora office on Google Maps"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={googleMapsEmbedUrl(NESTORA_OFFICE.latitude, NESTORA_OFFICE.longitude)}
+                allowFullScreen
+              />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

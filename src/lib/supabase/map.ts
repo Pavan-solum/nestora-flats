@@ -37,7 +37,8 @@ export const CATALOG_COLUMNS = [
   "longitude",
 ].join(", ");
 
-export const NEARBY_COLUMNS = "id, nearby_schools, nearby_colleges, nearby_hospitals, nearby_transport";
+export const NEARBY_COLUMNS =
+  "id, nearby_schools, nearby_colleges, nearby_hospitals, nearby_transport, map_url, latitude, longitude";
 
 export function bucketObjectPath(url: string): string | null {
   const marker = `/storage/v1/object/public/${BUCKET}/`;
