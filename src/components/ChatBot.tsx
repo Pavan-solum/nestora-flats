@@ -179,7 +179,7 @@ export function ChatBot() {
 
       <button
         type="button"
-        className="chatbot-launcher"
+        className="btn btn-primary chatbot-launcher"
         aria-label={open ? "Close Nestora Assist" : "Open Nestora Assist"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}

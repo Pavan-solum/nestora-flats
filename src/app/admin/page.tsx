@@ -187,13 +187,13 @@ function Dashboard() {
                 {formatPrice(flat.price)}
               </p>
               <div className="mobile-stack mt-4">
-                <Link href={`/flats/${flat.id}`} className="btn btn-secondary btn-full-mobile !py-2.5 text-sm">
+                <Link href={`/flats/${flat.id}`} className="btn btn-secondary btn-sm btn-full-mobile">
                   View
                 </Link>
                 {canWriteFlat && (
                   <Link
                     href={`/admin/flats/${flat.id}/edit`}
-                    className="btn btn-primary btn-full-mobile !py-2.5 text-sm"
+                    className="btn btn-primary btn-sm btn-full-mobile"
                   >
                     Edit
                   </Link>
@@ -202,7 +202,7 @@ function Dashboard() {
                   <BusyButton
                     pending={pending === `flat:${flat.id}`}
                     pendingLabel="Deletingâ€¦"
-                    className="btn btn-danger btn-full-mobile !py-2.5 text-sm"
+                    className="btn btn-danger btn-sm btn-full-mobile"
                     onClick={() => {
                       if (confirm(`Delete "${flat.title}"?`)) {
                         void runAction(`flat:${flat.id}`, () => deleteFlat(flat.id), "Could not delete this listing");
@@ -246,13 +246,13 @@ function Dashboard() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
-                      <Link href={`/flats/${flat.id}`} className="text-sage font-semibold">
+                      <Link href={`/flats/${flat.id}`} className="btn btn-secondary btn-sm">
                         View
                       </Link>
                       {canWriteFlat && (
                         <Link
                           href={`/admin/flats/${flat.id}/edit`}
-                          className="text-ink font-semibold"
+                          className="btn btn-primary btn-sm"
                         >
                           Edit
                         </Link>
@@ -261,7 +261,7 @@ function Dashboard() {
                         <BusyButton
                           pending={pending === `flat:${flat.id}`}
                           pendingLabel="Deletingâ€¦"
-                          className="inline-flex items-center gap-2 font-semibold text-danger disabled:cursor-progress disabled:opacity-70"
+                          className="btn btn-danger btn-sm"
                           onClick={() => {
                             if (confirm(`Delete "${flat.title}"?`)) {
                               void runAction(`flat:${flat.id}`, () => deleteFlat(flat.id), "Could not delete this listing");

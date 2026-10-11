@@ -133,14 +133,16 @@ export function EnquiryForm({
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <button
               type="button"
-              className={`chip inline-flex min-h-11 !justify-center !py-2.5 ${intent === "buy" ? "chip-sage" : ""}`}
+              aria-pressed={intent === "buy"}
+              className={`toggle-chip min-h-11 !py-2.5 ${intent === "buy" ? "toggle-chip--on" : ""}`}
               onClick={() => setIntent("buy")}
             >
               Buy a flat
             </button>
             <button
               type="button"
-              className={`chip inline-flex min-h-11 !justify-center !py-2.5 ${intent === "sell" ? "chip-sage" : ""}`}
+              aria-pressed={intent === "sell"}
+              className={`toggle-chip min-h-11 !py-2.5 ${intent === "sell" ? "toggle-chip--on" : ""}`}
               onClick={() => setIntent("sell")}
             >
               Sell my flat
