@@ -2,6 +2,7 @@ export type SocialResult = {
   network: string;
   ok: boolean;
   remoteId?: string;
+  postId?: string;
   error?: string;
 };
 

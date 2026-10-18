@@ -72,7 +72,7 @@ function Dashboard() {
         <div>
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl">Agent dashboard</h1>
           <p className="mt-2 text-sm text-ink-soft sm:text-base">
-            Manage Nestora inventory and buyer/seller leads for the marketing desk.
+            Manage Prop Nexa Homes inventory and buyer/seller leads for the marketing desk.
           </p>
         </div>
         <div className="mobile-stack w-full sm:w-auto">

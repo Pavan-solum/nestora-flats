@@ -33,7 +33,7 @@ export async function signInStaff(supabase: StaffClient, email: string, password
     return {
       ok: false as const,
       status: 403,
-      error: "This account is not a Nestora staff login.",
+      error: "This account is not a Prop Nexa Homes staff login.",
     };
   }
   return { ok: true as const };

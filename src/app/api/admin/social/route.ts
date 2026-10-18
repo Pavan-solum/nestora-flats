@@ -1,13 +1,14 @@
 import { listSocialNetworks } from "@/lib/social/adapters";
-import { listSocialPosts, saveSocialPost } from "@/lib/social/store";
+import { listSocialPosts, listSocialPostsForFlat, saveSocialPost } from "@/lib/social/store";
 import { staffAllows } from "@/lib/supabase/admin-auth";
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!(await staffAllows("publishSocial"))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const flatId = new URL(request.url).searchParams.get("flatId")?.trim() ?? "";
   try {
-    const posts = await listSocialPosts();
+    const posts = flatId ? await listSocialPostsForFlat(flatId) : await listSocialPosts();
     return Response.json({ posts, networks: listSocialNetworks() });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not load social posts";

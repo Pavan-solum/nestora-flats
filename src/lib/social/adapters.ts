@@ -63,11 +63,11 @@ async function graph(path: string, body: Record<string, string>, token = pageTok
     }
     throw error;
   }
-  const payload = (await response.json()) as { id?: string; error?: { message?: string } };
+  const payload = (await response.json()) as { id?: string; post_id?: string; error?: { message?: string } };
   if (!response.ok || payload.error) {
     throw new Error(payload.error?.message || "Meta could not publish this post.");
   }
-  return payload.id ?? "";
+  return payload;
 }
 
 async function waitForInstagram(containerId: string) {
@@ -90,7 +90,7 @@ async function publishFacebook(input: SocialPublishInput): Promise<SocialResult>
   try {
     const token = await facebookPageToken();
     if (input.imageUrls.length === 1) {
-      const remoteId = await graph(
+      const payload = await graph(
         `${pageId()}/photos`,
         {
           url: input.imageUrls[0],
@@ -98,11 +98,12 @@ async function publishFacebook(input: SocialPublishInput): Promise<SocialResult>
         },
         token,
       );
-      return { network: "facebook", ok: true, remoteId };
+      return { network: "facebook", ok: true, remoteId: payload.id ?? "", postId: payload.post_id || payload.id || "" };
     }
     const photoIds: string[] = [];
     for (const url of input.imageUrls) {
-      photoIds.push(await graph(`${pageId()}/photos`, { url, published: "false" }, token));
+      const payload = await graph(`${pageId()}/photos`, { url, published: "false" }, token);
+      photoIds.push(payload.id ?? "");
     }
     const attached = new URLSearchParams({ message: input.caption, access_token: token });
     photoIds.forEach((id, index) => {
@@ -119,7 +120,7 @@ async function publishFacebook(input: SocialPublishInput): Promise<SocialResult>
       throw new Error(payload.error?.message || "Meta could not publish this post.");
     }
     const remoteId = payload.id ?? "";
-    return { network: "facebook", ok: true, remoteId };
+    return { network: "facebook", ok: true, remoteId, postId: remoteId };
   } catch (error) {
     return {
       network: "facebook",
@@ -134,23 +135,23 @@ async function publishInstagram(input: SocialPublishInput): Promise<SocialResult
     const userId = instagramId();
     let containerId = "";
     if (input.imageUrls.length === 1) {
-      containerId = await graph(`${userId}/media`, {
+      containerId = (await graph(`${userId}/media`, {
         image_url: input.imageUrls[0],
         caption: input.caption,
-      });
+      })).id ?? "";
     } else {
       const children: string[] = [];
       for (const url of input.imageUrls) {
-        children.push(await graph(`${userId}/media`, { image_url: url, is_carousel_item: "true" }));
+        children.push((await graph(`${userId}/media`, { image_url: url, is_carousel_item: "true" })).id ?? "");
       }
-      containerId = await graph(`${userId}/media`, {
+      containerId = (await graph(`${userId}/media`, {
         media_type: "CAROUSEL",
         children: children.join(","),
         caption: input.caption,
-      });
+      })).id ?? "";
     }
     await waitForInstagram(containerId);
-    const remoteId = await graph(`${userId}/media_publish`, { creation_id: containerId });
+    const remoteId = (await graph(`${userId}/media_publish`, { creation_id: containerId })).id ?? "";
     return { network: "instagram", ok: true, remoteId };
   } catch (error) {
     return {
@@ -158,6 +159,50 @@ async function publishInstagram(input: SocialPublishInput): Promise<SocialResult
       ok: false,
       error: networkError(error, "Instagram publish failed."),
     };
+  }
+}
+
+async function resolveFacebookPostId(result: Pick<SocialResult, "remoteId" | "postId">) {
+  if (result.postId) return result.postId;
+  const remoteId = result.remoteId ?? "";
+  if (!remoteId) throw new Error("This Facebook post has no saved id.");
+  if (remoteId.includes("_")) return remoteId;
+  const token = await facebookPageToken();
+  const response = await fetch(
+    `${GRAPH}/${remoteId}?fields=page_story_id&access_token=${encodeURIComponent(token)}`,
+    { signal: AbortSignal.timeout(15000) },
+  );
+  const payload = (await response.json()) as { page_story_id?: string; error?: { message?: string } };
+  if (!response.ok || payload.error) {
+    throw new Error(payload.error?.message || "Facebook could not find this post.");
+  }
+  return payload.page_story_id || remoteId;
+}
+
+export async function updateFacebookCaption(result: Pick<SocialResult, "remoteId" | "postId">, caption: string) {
+  const postId = await resolveFacebookPostId(result);
+  await graph(postId, { message: caption }, await facebookPageToken());
+  return postId;
+}
+
+export async function deleteFacebookPost(result: Pick<SocialResult, "remoteId" | "postId">) {
+  const postId = await resolveFacebookPostId(result);
+  const token = await facebookPageToken();
+  const remove = async (id: string) => {
+    const response = await fetch(`${GRAPH}/${id}?access_token=${encodeURIComponent(token)}`, {
+      method: "DELETE",
+      signal: AbortSignal.timeout(25000),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { success?: boolean; error?: { message?: string } };
+    if (!response.ok || payload.error) {
+      throw new Error(payload.error?.message || "Facebook could not delete this post.");
+    }
+  };
+  try {
+    await remove(postId);
+  } catch (error) {
+    if (!result.remoteId || result.remoteId === postId) throw error;
+    await remove(result.remoteId);
   }
 }
 

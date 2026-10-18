@@ -13,9 +13,9 @@ export default function ExplorePage() {
         <p className="chip chip-sage mb-3 w-fit">Browse by location</p>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl">Choose a city</h1>
         <p className="mt-3 text-ink-soft">
-          Start with the city, then pick a neighbourhood to see flats Nestora is
+          Start with the city, then pick a neighbourhood to see flats Prop Nexa Homes is
           marketing. Bengaluru is featured with major residential areas. Ready
-          to buy or sell? Contact a Nestora agent.
+          to buy or sell? Contact a Prop Nexa Homes agent.
         </p>
       </div>
 

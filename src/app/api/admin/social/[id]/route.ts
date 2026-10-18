@@ -1,4 +1,4 @@
-import { getSocialPost, removeSocialPost, saveSocialPost } from "@/lib/social/store";
+import { deleteSocialPost, getSocialPost, saveSocialPost, updateSocialCaption } from "@/lib/social/store";
 import { staffAllows } from "@/lib/supabase/admin-auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -8,6 +8,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await context.params;
+  const existing = await getSocialPost(id);
+  if (!existing) return Response.json({ error: "Social post not found." }, { status: 404 });
   const body = (await request.json()) as {
     flatId?: string;
     flatTitle?: string;
@@ -16,6 +18,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     networks?: string[];
   };
   try {
+    if (existing.status === "published") {
+      const post = await updateSocialCaption(id, body.caption ?? "");
+      return Response.json(post);
+    }
     const post = await saveSocialPost({
       id,
       flatId: body.flatId?.trim() ?? "",
@@ -42,7 +48,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     if (post.status === "published" && !(await staffAllows("deleteSocialHistory"))) {
       return Response.json({ error: "Only an admin can delete a published post from history." }, { status: 403 });
     }
-    await removeSocialPost(id);
+    await deleteSocialPost(id);
     return Response.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not delete the post";

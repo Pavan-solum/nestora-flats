@@ -98,12 +98,12 @@ export function EnquiryForm({
     return (
       <div className="surface p-6 md:p-8">
         <p className="chip chip-sage mb-3">Request received</p>
-        <h3 className="font-display text-3xl">A Nestora agent will call you</h3>
+        <h3 className="font-display text-3xl">A Prop Nexa Homes agent will call you</h3>
         <p className="mt-3 max-w-xl text-ink-soft">
           Thanks — your {intent === "buy" ? "buying" : "selling"} request is
-          with our marketing desk. A Nestora agent typically responds within 24
+          with our marketing desk. A Prop Nexa Homes agent typically responds within 24
           hours to guide the next steps. Buyers and sellers never deal directly
-          here; Nestora coordinates both sides.
+          here; Prop Nexa Homes coordinates both sides.
         </p>
         <button
           type="button"
@@ -119,10 +119,10 @@ export function EnquiryForm({
   return (
     <form className="surface space-y-4 p-4 sm:p-6 md:p-8" onSubmit={onSubmit}>
       <div>
-        <h3 className="font-display text-2xl sm:text-3xl">Contact a Nestora agent</h3>
+        <h3 className="font-display text-2xl sm:text-3xl">Contact a Prop Nexa Homes agent</h3>
         <p className="mt-2 text-sm text-ink-soft">
           Whether you want to buy or sell a flat, share your details and a
-          Nestora marketing agent will assist you — we handle introductions,
+          Prop Nexa Homes marketing agent will assist you — we handle introductions,
           visits, and negotiation support.
         </p>
       </div>
@@ -285,7 +285,7 @@ export function EnquiryForm({
         pendingLabel="Sending…"
         className="btn btn-primary btn-full-mobile w-full sm:w-auto"
       >
-        Contact Nestora agent
+        Contact Prop Nexa Homes agent
       </BusyButton>
     </form>
   );

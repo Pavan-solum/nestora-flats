@@ -14,10 +14,10 @@ type Message = {
 const welcome: Message = {
   id: "welcome",
   role: "bot",
-  text: "Hi! I’m Nestora Assist. Ask about buying, selling, Bengaluru areas, or contacting a Nestora agent.",
+  text: "Hi! I’m Prop Nexa Homes Assist. Ask about buying, selling, Bengaluru areas, or contacting a Prop Nexa Homes agent.",
   links: [
-    { label: "Buy with Nestora", href: "/enquiry?intent=buy" },
-    { label: "Sell with Nestora", href: "/enquiry?intent=sell" },
+    { label: "Buy with Prop Nexa Homes", href: "/enquiry?intent=buy" },
+    { label: "Sell with Prop Nexa Homes", href: "/enquiry?intent=sell" },
   ],
 };
 
@@ -95,12 +95,12 @@ export function ChatBot() {
         <section
           className="chatbot-panel"
           role="dialog"
-          aria-label="Nestora Assist chatbot"
+          aria-label="Prop Nexa Homes Assist chatbot"
           aria-modal="false"
         >
           <header className="chatbot-header">
             <div>
-              <p className="font-display text-lg leading-none">Nestora Assist</p>
+              <p className="font-display text-lg leading-none">Prop Nexa Homes Assist</p>
               <p className="mt-1 text-xs text-white/75">Broker help · Buy & sell</p>
             </div>
             <button
@@ -179,8 +179,8 @@ export function ChatBot() {
 
       <button
         type="button"
-        className="btn btn-primary chatbot-launcher"
-        aria-label={open ? "Close Nestora Assist" : "Open Nestora Assist"}
+        className="chatbot-launcher"
+        aria-label={open ? "Close Prop Nexa Homes Assist" : "Open Prop Nexa Homes Assist"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >

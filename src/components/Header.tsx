@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/context/AppContext";
 
 const links = [
@@ -19,6 +20,8 @@ export function Header() {
   const pathname = usePathname();
   const { favorites, isAdmin } = useApp();
   const [open, setOpen] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [menuTop, setMenuTop] = useState(0);
 
   useEffect(() => {
     setOpen(false);
@@ -37,19 +40,26 @@ export function Header() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    const update = () => setMenuTop(Math.ceil(barRef.current?.getBoundingClientRect().bottom ?? 0));
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [open]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-[#f7f9fb]">
-      <div className="container-shell flex items-center justify-between gap-3 py-3 sm:py-3.5">
-        <Link href="/" className="flex min-w-0 items-center gap-2">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-sage text-white font-display text-lg sm:h-10 sm:w-10 sm:rounded-2xl sm:text-xl">
-            N
-          </span>
-          <div className="min-w-0">
-            <p className="font-display text-lg leading-none sm:text-xl">Nestora</p>
-            <p className="truncate text-[11px] text-ink-soft sm:text-xs">
-              Property brokers
-            </p>
-          </div>
+      <div ref={barRef} className="container-shell flex items-center justify-between gap-3 py-2 sm:py-2.5">
+        <Link href="/" className="min-w-0" aria-label="Prop Nexa Homes">
+          <Image
+            src="/logo.png"
+            alt=""
+            width={512}
+            height={512}
+            priority
+            className="h-16 w-auto max-w-[46vw] rounded-xl object-contain object-left sm:h-20"
+          />
         </Link>
 
         <nav className="hidden items-center gap-3 lg:flex">
@@ -83,7 +93,10 @@ export function Header() {
             className="btn btn-secondary lg:hidden !min-h-11 !px-3.5"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => {
+              setMenuTop(Math.ceil(barRef.current?.getBoundingClientRect().bottom ?? 0));
+              setOpen((v) => !v);
+            }}
           >
             {open ? "Close" : "Menu"}
           </button>
@@ -91,9 +104,10 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 top-[57px] z-40 bg-[#14212b]/35 lg:hidden" onClick={() => setOpen(false)}>
+        <div className="fixed inset-x-0 bottom-0 z-40 bg-[#14212b]/35 lg:hidden" style={{ top: menuTop }} onClick={() => setOpen(false)}>
           <div
-            className="max-h-[calc(100vh-57px)] overflow-y-auto border-b border-line bg-white shadow-lg"
+            className="overflow-y-auto border-b border-line bg-white shadow-lg"
+            style={{ maxHeight: `calc(100vh - ${menuTop}px)` }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="container-shell flex flex-col gap-1 bg-[#f7f9fb] py-3 pb-6">

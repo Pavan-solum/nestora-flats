@@ -125,7 +125,7 @@ export default function FlatDetailPage() {
               href={`/enquiry?flat=${flat.id}`}
               className="btn btn-primary btn-full-mobile"
             >
-              Contact Nestora agent
+              Contact Prop Nexa Homes agent
             </Link>
           </div>
         </div>

@@ -1,7 +1,8 @@
 import { createId } from "@/lib/storage";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { deleteFacebookPost, publishToNetworks, updateFacebookCaption } from "./adapters";
+import { captionWithHashtags, listingCaption } from "./caption";
 import { networksToPublish, type SocialPost, type SocialPostStatus, type SocialResult } from "./types";
-import { publishToNetworks } from "./adapters";
 
 type Row = {
   id: string;
@@ -41,6 +42,16 @@ export async function listSocialPosts() {
   const { data, error } = await getSupabaseAdmin()
     .from("social_desk_posts")
     .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(missingTable(error.message));
+  return ((data ?? []) as Row[]).map(toPost);
+}
+
+export async function listSocialPostsForFlat(flatId: string) {
+  const { data, error } = await getSupabaseAdmin()
+    .from("social_desk_posts")
+    .select("*")
+    .eq("flat_id", flatId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(missingTable(error.message));
   return ((data ?? []) as Row[]).map(toPost);
@@ -140,4 +151,78 @@ export async function publishSocialPost(id: string) {
       .eq("id", id);
     throw new Error(message);
   }
+}
+
+function facebookResult(post: SocialPost) {
+  return post.results.find((result) => result.network === "facebook" && result.ok);
+}
+
+export async function updateSocialCaption(id: string, caption: string, flatTitle?: string) {
+  const post = await getSocialPost(id);
+  if (!post) throw new Error("Social post not found.");
+  if (post.status === "publishing") throw new Error("This post is already publishing.");
+  const text = caption.trim();
+  if (!text) throw new Error("Write a caption before saving.");
+  let results = post.results;
+  if (post.status === "published") {
+    const facebook = facebookResult(post);
+    if (facebook) {
+      const postId = await updateFacebookCaption(facebook, text);
+      results = post.results.map((result) =>
+        result.network === "facebook" && result.ok ? { ...result, postId } : result,
+      );
+    }
+  }
+  const { error } = await getSupabaseAdmin()
+    .from("social_desk_posts")
+    .update({
+      caption: text,
+      results,
+      ...(flatTitle ? { flat_title: flatTitle } : {}),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) throw new Error(missingTable(error.message));
+  const saved = await getSocialPost(id);
+  if (!saved) throw new Error("Could not save the caption.");
+  return saved;
+}
+
+export async function deleteSocialPost(id: string) {
+  const post = await getSocialPost(id);
+  if (!post) throw new Error("Social post not found.");
+  if (post.status === "publishing") throw new Error("This post is already publishing.");
+  if (post.status === "published") {
+    const facebook = facebookResult(post);
+    if (facebook) await deleteFacebookPost(facebook);
+  }
+  await removeSocialPost(id);
+}
+
+export async function syncLinkedCaptions(flat: {
+  id: string;
+  title: string;
+  price: number;
+  area: string;
+  city: string;
+  amenities?: string[];
+}) {
+  const posts = await listSocialPostsForFlat(flat.id);
+  const listingText = listingCaption(flat);
+  const outcome: { id: string; title: string; ok: boolean; error?: string }[] = [];
+  for (const post of posts) {
+    const caption = captionWithHashtags(listingText, post.caption);
+    try {
+      await updateSocialCaption(post.id, caption, flat.title);
+      outcome.push({ id: post.id, title: flat.title, ok: true });
+    } catch (error) {
+      outcome.push({
+        id: post.id,
+        title: post.flatTitle || flat.title,
+        ok: false,
+        error: error instanceof Error ? error.message : "Could not update this social post.",
+      });
+    }
+  }
+  return outcome;
 }
