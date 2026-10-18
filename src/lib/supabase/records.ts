@@ -21,7 +21,7 @@ import { supabaseUrl } from "./client";
 
 let extraColumns: boolean | null = null;
 
-export async function hasExtraColumns() {
+async function hasExtraColumns() {
   if (extraColumns != null) return extraColumns;
   const { error } = await getSupabaseAdmin()
     .from("flats")
@@ -31,14 +31,14 @@ export async function hasExtraColumns() {
   return extraColumns;
 }
 
-export async function loadExtras(): Promise<Record<string, FlatExtra>> {
+async function loadExtras(): Promise<Record<string, FlatExtra>> {
   const { data, error } = await getSupabaseAdmin().storage.from(BUCKET).download(EXTRAS_PATH);
   if (error || !data) return {};
   const parsed = JSON.parse(await data.text()) as Record<string, FlatExtra>;
   return parsed && typeof parsed === "object" ? parsed : {};
 }
 
-export async function saveExtras(extras: Record<string, FlatExtra>) {
+async function saveExtras(extras: Record<string, FlatExtra>) {
   const { error } = await getSupabaseAdmin()
     .storage.from(BUCKET)
     .upload(EXTRAS_PATH, JSON.stringify(extras), {
@@ -272,7 +272,7 @@ function storageName(url: string) {
   return `listings/${id}.jpg`;
 }
 
-export function publicImageUrl(objectPath: string) {
+function publicImageUrl(objectPath: string) {
   return `${supabaseUrl()}/storage/v1/object/public/${BUCKET}/${objectPath}`;
 }
 
@@ -347,7 +347,7 @@ export async function tryApplySchema() {
   return false;
 }
 
-export async function seedDatabase() {
+async function seedDatabase() {
   await tryApplySchema();
   await ensureBucket();
   const includeExtraColumns = await hasExtraColumns();

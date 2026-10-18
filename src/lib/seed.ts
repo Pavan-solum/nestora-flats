@@ -753,6 +753,4 @@ export const FACING_OPTIONS = [
   "South-West",
 ] as const;
 
-export { CITY_OPTIONS } from "./locations";
-
 export const DEFAULT_IMAGES = [imgs.living, imgs.kitchen, imgs.bedroom];
