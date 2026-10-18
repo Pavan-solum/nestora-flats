@@ -19,7 +19,7 @@ export function HeroCopy({ featured }: { featured?: Flat | null }) {
     return (
       <div className="hero-copy flex h-full flex-col justify-center py-2">
         <div className="space-y-4 sm:space-y-5">
-          <p className="chip chip-sage w-fit">Nestora property brokers</p>
+          <p className="chip chip-sage w-fit">Prop Nexa Homes property brokers</p>
           <div>
             <h1 className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
               {featured.projectName || featured.title}
@@ -59,18 +59,18 @@ export function HeroCopy({ featured }: { featured?: Flat | null }) {
   return (
     <div className="hero-copy flex h-full flex-col justify-center py-2">
       <div className="space-y-4 sm:space-y-5">
-        <p className="chip chip-sage w-fit">Nestora property brokers</p>
+        <p className="chip chip-sage w-fit">Prop Nexa Homes property brokers</p>
         <div>
           <p className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl">
-            Nestora
+            Prop Nexa Homes
           </p>
           <h1 className="mt-3 max-w-lg font-display text-xl leading-snug text-ink-soft sm:text-2xl">
-            Buy or sell flats through a Nestora marketing agent.
+            Buy or sell flats through a Prop Nexa Homes marketing agent.
           </h1>
         </div>
         <p className="max-w-md text-sm leading-relaxed text-ink-soft sm:text-base">
           Browse curated listings by city and area. When you are ready, contact
-          Nestora — our agents connect buyers and sellers and guide every step.
+          Prop Nexa Homes — our agents connect buyers and sellers and guide every step.
         </p>
         <div className="mobile-stack pt-1">
           <Link href="/explore/bengaluru" className="btn btn-primary btn-full-mobile">

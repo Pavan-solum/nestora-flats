@@ -7,9 +7,9 @@ export default function ContactPage() {
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="space-y-6">
           <div>
-            <h1 className="font-display text-5xl">Contact Nestora</h1>
+            <h1 className="font-display text-5xl">Contact Prop Nexa Homes</h1>
             <p className="mt-3 text-ink-soft">
-              Speak with a Nestora marketing agent for buying, selling, site
+              Speak with a Prop Nexa Homes marketing agent for buying, selling, site
               visits, or listing support. We represent both sides of the deal.
             </p>
           </div>
@@ -20,7 +20,7 @@ export default function ContactPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-ink-soft">Email</p>
-              <p className="mt-1 font-semibold">agents@nestora.demo</p>
+              <p className="mt-1 font-semibold">agents@propnexahomes.demo</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-ink-soft">Hours</p>

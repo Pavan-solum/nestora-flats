@@ -7,14 +7,14 @@ export default function AboutPage() {
       <section className="container-shell section-space !pt-10">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
-            <p className="chip chip-sage mb-4">About Nestora</p>
+            <p className="chip chip-sage mb-4">About Prop Nexa Homes</p>
             <h1 className="font-display text-5xl md:text-6xl">
               Your brokerage for buying and selling flats
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-ink-soft">
-              Nestora is a property broker platform. Buyers browse curated
+              Prop Nexa Homes is a property broker platform. Buyers browse curated
               listings; sellers list through our marketing team. Both sides
-              contact a Nestora agent — we connect the right matches and guide
+              contact a Prop Nexa Homes agent — we connect the right matches and guide
               the deal.
             </p>
           </div>
@@ -35,14 +35,14 @@ export default function AboutPage() {
           {[
             {
               title: "For buyers",
-              text: "Explore flats by city and area, then contact a Nestora agent for visits, pricing guidance, and negotiation support.",
+              text: "Explore flats by city and area, then contact a Prop Nexa Homes agent for visits, pricing guidance, and negotiation support.",
             },
             {
               title: "For sellers",
-              text: "Share your flat details with our marketing desk. Nestora agents list, promote, and connect you with serious buyers.",
+              text: "Share your flat details with our marketing desk. Prop Nexa Homes agents list, promote, and connect you with serious buyers.",
             },
             {
-              title: "For Nestora agents",
+              title: "For Prop Nexa Homes agents",
               text: "Manage inventory, update listing status, and track buyer/seller leads from one admin desk.",
             },
           ].map((item) => (
@@ -55,17 +55,17 @@ export default function AboutPage() {
       </section>
 
       <section className="container-shell section-space text-center">
-        <h2 className="font-display text-4xl">Talk to Nestora</h2>
+        <h2 className="font-display text-4xl">Talk to Prop Nexa Homes</h2>
         <p className="mx-auto mt-3 max-w-xl text-ink-soft">
           Ready to buy or sell? Reach a marketing agent and we will take it from
           there.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/enquiry?intent=buy" className="btn btn-primary">
-            Buy with Nestora
+            Buy with Prop Nexa Homes
           </Link>
           <Link href="/enquiry?intent=sell" className="btn btn-secondary">
-            Sell with Nestora
+            Sell with Prop Nexa Homes
           </Link>
         </div>
       </section>

@@ -7,7 +7,7 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(hi|hello|hey|namaste|good\s*(morning|afternoon|evening))\b/i,
     reply: {
-      text: "Hello! I’m Nestora Assist. I can help you buy or sell a flat through our marketing agents, or find Bengaluru areas to explore.",
+      text: "Hello! I’m Prop Nexa Homes Assist. I can help you buy or sell a flat through our marketing agents, or find Bengaluru areas to explore.",
       links: [
         { label: "Contact agent", href: "/enquiry" },
         { label: "Explore Bengaluru", href: "/explore/bengaluru" },
@@ -17,9 +17,9 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(buy|buying|purchase|looking\s*for|want\s*a\s*flat)\b/i,
     reply: {
-      text: "To buy a flat, browse listings by city and area, then contact a Nestora agent. We coordinate visits and negotiations — you don’t deal with sellers directly here.",
+      text: "To buy a flat, browse listings by city and area, then contact a Prop Nexa Homes agent. We coordinate visits and negotiations — you don’t deal with sellers directly here.",
       links: [
-        { label: "Buy with Nestora", href: "/enquiry?intent=buy" },
+        { label: "Buy with Prop Nexa Homes", href: "/enquiry?intent=buy" },
         { label: "Browse listings", href: "/listings" },
       ],
     },
@@ -27,14 +27,14 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(sell|selling|list\s*my|owner)\b/i,
     reply: {
-      text: "To sell your flat, share details with a Nestora marketing agent. We list and promote your home and connect you with serious buyers.",
-      links: [{ label: "Sell with Nestora", href: "/enquiry?intent=sell" }],
+      text: "To sell your flat, share details with a Prop Nexa Homes marketing agent. We list and promote your home and connect you with serious buyers.",
+      links: [{ label: "Sell with Prop Nexa Homes", href: "/enquiry?intent=sell" }],
     },
   },
   {
     match: /\b(bengaluru|bangalore|whitefield|koramangala|indiranagar|hsr|hebbal|area|localit)\b/i,
     reply: {
-      text: "Nestora focuses on city → area browsing. Start with Bengaluru, then pick a locality like Whitefield, Koramangala, Indiranagar, or HSR Layout.",
+      text: "Prop Nexa Homes focuses on city → area browsing. Start with Bengaluru, then pick a locality like Whitefield, Koramangala, Indiranagar, or HSR Layout.",
       links: [
         { label: "Bengaluru areas", href: "/explore/bengaluru" },
         { label: "All cities", href: "/explore" },
@@ -44,7 +44,7 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(price|cost|budget|starting|how\s*much|₹|rs\.?)\b/i,
     reply: {
-      text: "Listings show “Starting from” prices. Exact offers are discussed with a Nestora agent after you enquire — pricing depends on negotiation and property details.",
+      text: "Listings show “Starting from” prices. Exact offers are discussed with a Prop Nexa Homes agent after you enquire — pricing depends on negotiation and property details.",
       links: [
         { label: "View listings", href: "/listings" },
         { label: "Ask an agent", href: "/enquiry" },
@@ -54,7 +54,7 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(agent|broker|contact|call|phone|visit|enquiry|enquir)\b/i,
     reply: {
-      text: "Buyers and sellers both contact Nestora agents. Use the contact form or call the agent desk at +91 98765 43210 (demo).",
+      text: "Buyers and sellers both contact Prop Nexa Homes agents. Use the contact form or call the agent desk at +91 98765 43210 (demo).",
       links: [
         { label: "Contact agent", href: "/enquiry" },
         { label: "Office contact", href: "/contact" },
@@ -64,7 +64,7 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(admin|login|password|dashboard)\b/i,
     reply: {
-      text: "Nestora staff manage inventory from the admin dashboard. Sign in with the staff email from Supabase.",
+      text: "Prop Nexa Homes staff manage inventory from the admin dashboard. Sign in with the staff email from Supabase.",
       links: [{ label: "Admin login", href: "/admin/login" }],
     },
   },
@@ -85,9 +85,9 @@ const replies: { match: RegExp; reply: ChatReply }[] = [
   {
     match: /\b(help|support|what\s*can|how\s*work|about)\b/i,
     reply: {
-      text: "Nestora is a brokerage: explore flats by city and area, then contact our marketing agent to buy or sell. I can help with buying, selling, Bengaluru areas, prices, or contacting an agent.",
+      text: "Prop Nexa Homes is a brokerage: explore flats by city and area, then contact our marketing agent to buy or sell. I can help with buying, selling, Bengaluru areas, prices, or contacting an agent.",
       links: [
-        { label: "About Nestora", href: "/about" },
+        { label: "About Prop Nexa Homes", href: "/about" },
         { label: "Contact agent", href: "/enquiry" },
       ],
     },
@@ -114,11 +114,11 @@ export function getChatbotReply(input: string): ChatReply {
   }
 
   return {
-    text: "I’m not sure about that yet. Try asking about buying, selling, Bengaluru areas, prices, or contacting a Nestora agent.",
+    text: "I’m not sure about that yet. Try asking about buying, selling, Bengaluru areas, prices, or contacting a Prop Nexa Homes agent.",
     links: [
       { label: "Contact agent", href: "/enquiry" },
       { label: "Explore cities", href: "/explore" },
-      { label: "About Nestora", href: "/about" },
+      { label: "About Prop Nexa Homes", href: "/about" },
     ],
   };
 }

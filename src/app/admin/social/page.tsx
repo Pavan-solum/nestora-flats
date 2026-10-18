@@ -34,6 +34,7 @@ function SocialDesk() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [chosen, setChosen] = useState<string[]>([]);
   const [editingId, setEditingId] = useState("");
+  const [publishedView, setPublishedView] = useState(false);
   const [composerOpen, setComposerOpen] = useState(true);
   const [busy, setBusy] = useState<"save" | "post" | "">("");
 
@@ -57,6 +58,7 @@ function SocialDesk() {
     const next = flats.find((item) => item.id === nextId);
     setFlatId(nextId);
     setEditingId("");
+    setPublishedView(false);
     setError("");
     if (!next) {
       setCaption("");
@@ -78,6 +80,7 @@ function SocialDesk() {
   function closeComposer() {
     setComposerOpen(false);
     setEditingId("");
+    setPublishedView(false);
     setFlatId("");
     setCaption("");
     setPhotos([]);
@@ -87,12 +90,49 @@ function SocialDesk() {
   function openDraft(post: SocialPost) {
     if (post.status === "published" || post.status === "publishing") return;
     setComposerOpen(true);
+    setPublishedView(false);
     setEditingId(post.id);
     setFlatId(post.flatId);
     setCaption(post.caption);
     setPhotos(post.imageUrls);
     setChosen(post.networks);
     setError("");
+  }
+
+  function openPublished(post: SocialPost) {
+    setComposerOpen(true);
+    setPublishedView(true);
+    setEditingId(post.id);
+    setFlatId(post.flatId);
+    setCaption(post.caption);
+    setPhotos(post.imageUrls);
+    setChosen(post.networks);
+    setError("");
+  }
+
+  async function saveCaption() {
+    setError("");
+    setBusy("save");
+    try {
+      const response = await fetch(`/api/admin/social/${editingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caption }),
+      });
+      const saved = await readSocialResponse(response);
+      if (!response.ok) {
+        setError(publishFailureMessage(saved.error));
+        await load();
+        return;
+      }
+      closeComposer();
+      await load();
+    } catch (error) {
+      setError(publishFailureMessage(error instanceof Error ? error.message : ""));
+      await load();
+    } finally {
+      setBusy("");
+    }
   }
 
   async function save(publish: boolean) {
@@ -152,6 +192,7 @@ function SocialDesk() {
 
   async function remove(post: SocialPost) {
     if (post.status === "published" && !canDeleteHistory) return;
+    if (post.status === "published" && !confirm("This removes the post from the Facebook Page and from this history.")) return;
     setBusy("");
     const response = await fetch(`/api/admin/social/${post.id}`, { method: "DELETE" });
     const body = (await response.json()) as { error?: string };
@@ -181,6 +222,7 @@ function SocialDesk() {
               className="btn btn-primary"
               onClick={() => {
                 setError("");
+                setPublishedView(false);
                 setComposerOpen(true);
               }}
             >
@@ -207,9 +249,17 @@ function SocialDesk() {
         className="mb-12 grid gap-5 rounded-3xl border border-line bg-white p-5"
         onSubmit={(event) => {
           event.preventDefault();
-          void save(false);
+          if (publishedView) void saveCaption();
+          else void save(false);
         }}
       >
+        {publishedView ? (
+          <div>
+            <p className="text-sm font-semibold">Listing</p>
+            <p className="mt-1">{posts.find((post) => post.id === editingId)?.flatTitle || flat?.title || "Listing"}</p>
+            <p className="mt-2 text-sm text-ink-soft">This post is on Facebook. You can change the caption. The photos stay as they were posted.</p>
+          </div>
+        ) : (
         <div className="field">
           <label htmlFor="social-flat">Listing</label>
           <select id="social-flat" value={flatId} onChange={(event) => applyFlat(event.target.value)}>
@@ -221,11 +271,18 @@ function SocialDesk() {
             ))}
           </select>
         </div>
+        )}
         <div className="field">
           <label htmlFor="social-caption">Caption</label>
           <textarea id="social-caption" value={caption} onChange={(event) => setCaption(event.target.value)} />
         </div>
-        {flat && (
+        {publishedView ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {photos.map((url) => (
+              <img key={url} src={url} alt="" className="h-24 w-full rounded-xl object-cover" />
+            ))}
+          </div>
+        ) : flat && (
           <fieldset className="grid gap-3">
             <legend className="text-sm font-semibold">Photos</legend>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -244,6 +301,7 @@ function SocialDesk() {
             </p>
           </fieldset>
         )}
+        {!publishedView && (
         <fieldset className="flex flex-wrap gap-4">
           <legend className="sr-only">Networks</legend>
           {networks.map((network) => (
@@ -259,12 +317,29 @@ function SocialDesk() {
             </label>
           ))}
         </fieldset>
+        )}
         {error && (
           <p className="text-sm text-red-700" role="alert">
             {error}
           </p>
         )}
         <div className="flex flex-wrap gap-3">
+          {publishedView ? (
+            <>
+              <BusyButton
+                type="submit"
+                className="btn btn-primary"
+                pending={busy === "save"}
+                pendingLabel="Saving…"
+              >
+                Save caption
+              </BusyButton>
+              <button type="button" className="btn btn-secondary" onClick={closeComposer}>
+                Close
+              </button>
+            </>
+          ) : (
+            <>
           <BusyButton
             type="submit"
             className="btn btn-secondary"
@@ -284,6 +359,8 @@ function SocialDesk() {
           >
             Post now
           </BusyButton>
+            </>
+          )}
         </div>
       </form>
       )}
@@ -325,6 +402,11 @@ function SocialDesk() {
                 </td>
                 <td className="px-4 py-3">{new Date(post.updatedAt).toLocaleString()}</td>
                 <td className="px-4 py-3 text-right">
+                  {post.status === "published" && (
+                    <button type="button" className="btn btn-secondary mr-2" onClick={() => openPublished(post)}>
+                      View
+                    </button>
+                  )}
                   {post.status !== "published" && post.status !== "publishing" && (
                     <button type="button" className="btn btn-secondary mr-2" onClick={() => openDraft(post)}>
                       Edit

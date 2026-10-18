@@ -16,10 +16,10 @@ function EnquiryContent() {
   return (
     <div className="container-shell section-space !pt-10">
       <div className="mb-8 max-w-2xl">
-        <p className="chip chip-sage mb-3 w-fit">Nestora marketing desk</p>
+        <p className="chip chip-sage mb-3 w-fit">Prop Nexa Homes marketing desk</p>
         <h1 className="font-display text-5xl">Contact our agent</h1>
         <p className="mt-3 text-ink-soft">
-          Nestora is a brokerage. Buyers and sellers both reach our marketing
+          Prop Nexa Homes is a brokerage. Buyers and sellers both reach our marketing
           agents — we coordinate visits, negotiations, and listing support. You
           do not deal with the other party directly on this site.
         </p>

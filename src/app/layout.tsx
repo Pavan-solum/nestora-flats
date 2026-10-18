@@ -22,11 +22,12 @@ const display = Syne({
 
 export const metadata: Metadata = {
   title: {
-    default: "Nestora — Property Brokers",
-    template: "%s · Nestora",
+    default: "Prop Nexa Homes — Property Brokers",
+    template: "%s · Prop Nexa Homes",
   },
   description:
-    "Nestora brokers help buyers and sellers of flats. Browse by city and area, then contact a Nestora marketing agent to buy or sell.",
+    "Prop Nexa Homes brokers help buyers and sellers of flats. Browse by city and area, then contact a Prop Nexa Homes marketing agent to buy or sell.",
+  icons: { icon: "/logo.png" },
 };
 
 export const viewport: Viewport = {

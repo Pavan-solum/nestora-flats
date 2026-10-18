@@ -14,19 +14,19 @@ const MARS_ID = "flat-mars-mount";
 const features = [
   {
     title: "City → area discovery",
-    text: "Start with a city like Bengaluru, then open key localities to see flats Nestora is marketing.",
+    text: "Start with a city like Bengaluru, then open key localities to see flats Prop Nexa Homes is marketing.",
   },
   {
     title: "Buyer agent support",
-    text: "Shortlist homes, then contact a Nestora agent for visits, pricing guidance, and deal support.",
+    text: "Shortlist homes, then contact a Prop Nexa Homes agent for visits, pricing guidance, and deal support.",
   },
   {
     title: "Seller marketing desk",
-    text: "Sellers reach Nestora to list flats — our agents promote inventory and connect serious buyers.",
+    text: "Sellers reach Prop Nexa Homes to list flats — our agents promote inventory and connect serious buyers.",
   },
   {
     title: "Brokered introductions",
-    text: "Buyers and sellers both deal with Nestora. We coordinate introductions.",
+    text: "Buyers and sellers both deal with Prop Nexa Homes. We coordinate introductions.",
   },
   {
     title: "Rich listing details",
@@ -34,7 +34,7 @@ const features = [
   },
   {
     title: "Agent inventory admin",
-    text: "Nestora staff update new and older flats, mark under-offer or sold, and track buy/sell leads.",
+    text: "Prop Nexa Homes staff update new and older flats, mark under-offer or sold, and track buy/sell leads.",
   },
 ];
 
@@ -119,7 +119,7 @@ export default function HomePage() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
           <div>
             <h2 className="font-display text-3xl sm:text-4xl">More listings</h2>
-            <p className="mt-2 text-ink-soft">Other homes Nestora is marketing.</p>
+            <p className="mt-2 text-ink-soft">Other homes Prop Nexa Homes is marketing.</p>
           </div>
           <Link href="/listings" className="btn btn-secondary">
             View all listings
@@ -135,10 +135,10 @@ export default function HomePage() {
       <section className="bg-[#14212b] text-white">
         <div className="container-shell section-space">
           <div className="mb-8 max-w-2xl sm:mb-10">
-            <h2 className="font-display text-3xl sm:text-4xl">How Nestora brokerage works</h2>
+            <h2 className="font-display text-3xl sm:text-4xl">How Prop Nexa Homes brokerage works</h2>
             <p className="mt-3 text-white/70">
               We market flats, advise buyers and sellers, and keep every
-              conversation with a Nestora agent.
+              conversation with a Prop Nexa Homes agent.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -163,7 +163,7 @@ export default function HomePage() {
             <h2 className="font-display text-3xl sm:text-4xl">City first, then your area</h2>
             <p className="mt-3 max-w-xl text-ink-soft">
               Pick Bengaluru or another city, choose a neighbourhood, and view
-              flats Nestora is marketing there. Ready to move? Contact our agent.
+              flats Prop Nexa Homes is marketing there. Ready to move? Contact our agent.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href="/explore/bengaluru/jp-nagar" className="btn btn-primary">
@@ -207,12 +207,12 @@ export default function HomePage() {
           <div className="space-y-4 p-5 md:p-10">
             <h2 className="font-display text-3xl sm:text-4xl">Selling your flat?</h2>
             <p className="text-ink-soft">
-              Contact a Nestora marketing agent. We list your home, promote it
+              Contact a Prop Nexa Homes marketing agent. We list your home, promote it
               to buyers, and coordinate the deal.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/enquiry?intent=sell" className="btn btn-primary">
-                Sell with Nestora
+                Sell with Prop Nexa Homes
               </Link>
               <Link href="/admin/login" className="btn btn-secondary">
                 Agent admin
