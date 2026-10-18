@@ -1,52 +1,9 @@
-import type { Enquiry, Flat } from "./types";
-import { SEED_FLATS } from "./seed";
+import type { Flat } from "./types";
 
-const FLATS_KEY = "nestora_flats_v2";
-const ENQUIRIES_KEY = "nestora_enquiries_v2";
 const FAVORITES_KEY = "nestora_favorites_v1";
 
 function canUseStorage() {
   return typeof window !== "undefined";
-}
-
-export function loadFlats(): Flat[] {
-  if (!canUseStorage()) return SEED_FLATS;
-  try {
-    const raw = localStorage.getItem(FLATS_KEY);
-    if (!raw) {
-      localStorage.setItem(FLATS_KEY, JSON.stringify(SEED_FLATS));
-      return SEED_FLATS;
-    }
-    return JSON.parse(raw) as Flat[];
-  } catch {
-    return SEED_FLATS;
-  }
-}
-
-export function saveFlats(flats: Flat[]) {
-  if (!canUseStorage()) return;
-  localStorage.setItem(FLATS_KEY, JSON.stringify(flats));
-}
-
-export function resetFlatsToSeed(): Flat[] {
-  if (!canUseStorage()) return SEED_FLATS;
-  localStorage.setItem(FLATS_KEY, JSON.stringify(SEED_FLATS));
-  return SEED_FLATS;
-}
-
-export function loadEnquiries(): Enquiry[] {
-  if (!canUseStorage()) return [];
-  try {
-    const raw = localStorage.getItem(ENQUIRIES_KEY);
-    return raw ? (JSON.parse(raw) as Enquiry[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function saveEnquiries(enquiries: Enquiry[]) {
-  if (!canUseStorage()) return;
-  localStorage.setItem(ENQUIRIES_KEY, JSON.stringify(enquiries));
 }
 
 export function loadFavorites(): string[] {

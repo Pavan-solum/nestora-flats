@@ -23,13 +23,11 @@ function Dashboard() {
     enquiries,
     logout,
     deleteFlat,
-    resetData,
     staffRole,
   } = useApp();
   const canWriteFlat = roleCan(staffRole, "writeFlat");
   const canDeleteFlat = roleCan(staffRole, "deleteFlat");
   const canManageStaff = roleCan(staffRole, "manageStaff");
-  const canReset = roleCan(staffRole, "resetInventory");
   const canReadLeads = roleCan(staffRole, "readEnquiries");
   const canWriteLead = roleCan(staffRole, "writeEnquiry");
   const canPublishSocial = roleCan(staffRole, "publishSocial");
@@ -112,28 +110,7 @@ function Dashboard() {
       </div>
 
       <section className="mb-10">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-2xl sm:text-3xl">Inventory</h2>
-          {canReset && (
-          <BusyButton
-            pending={pending === "reset"}
-            pendingLabel="Resettingâ€¦"
-            className="btn btn-ghost text-sm"
-            onClick={() => {
-              if (
-                !confirm(
-                  "Replace listings with the demo seed, delete flats added after the seed, and clear every enquiry?",
-                )
-              ) {
-                return;
-              }
-              void runAction("reset", resetData, "Could not reset listings");
-            }}
-          >
-            Reset demo data
-          </BusyButton>
-          )}
-        </div>
+        <h2 className="mb-4 font-display text-2xl sm:text-3xl">Inventory</h2>
         {actionError && <p className="mb-4 text-sm text-danger">{actionError}</p>}
 
         <div className="mb-4 grid gap-3 sm:grid-cols-3">

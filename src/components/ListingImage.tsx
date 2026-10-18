@@ -6,6 +6,19 @@ import { DEFAULT_IMAGES } from "@/lib/seed";
 
 const FALLBACK = DEFAULT_IMAGES[0];
 
+function optimizedHost(src: string) {
+  if (src.startsWith("/")) return true;
+  try {
+    const url = new URL(src);
+    if (url.protocol !== "https:") return false;
+    if (url.hostname === "images.unsplash.com") return true;
+    const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    return Boolean(supabase && url.hostname === new URL(supabase).hostname);
+  } catch {
+    return false;
+  }
+}
+
 type Props = Omit<ImageProps, "src" | "alt"> & {
   src?: string | null;
   alt: string;
@@ -36,6 +49,7 @@ export function ListingImage({
       {...load}
       src={resolved}
       alt={alt}
+      unoptimized={!optimizedHost(resolved)}
       onError={(event) => {
         if (resolved !== FALLBACK) setFailed(true);
         onError?.(event);

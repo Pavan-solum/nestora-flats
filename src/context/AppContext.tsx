@@ -32,7 +32,6 @@ type AppContextValue = {
   addFlat: (input: FlatInput) => Promise<Flat>;
   updateFlat: (id: string, input: FlatInput) => Promise<Flat | null>;
   deleteFlat: (id: string) => Promise<void>;
-  resetData: () => Promise<void>;
   toggleFavorite: (id: string) => void;
   submitEnquiry: (enquiry: Omit<Enquiry, "id" | "createdAt">) => Promise<Enquiry>;
   updateEnquiry: (
@@ -301,15 +300,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const resetData = useCallback(async () => {
-    await apiJson("/api/flats/reset", { method: "POST" });
-    await loadFlats(true);
-    setEnquiries([]);
-    leadsLoaded.current = true;
-    setFavorites([]);
-    saveFavorites([]);
-  }, [loadFlats]);
-
   const toggleFavorite = useCallback(
     (id: string) => {
       const next = favorites.includes(id)
@@ -373,7 +363,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addFlat,
       updateFlat,
       deleteFlat,
-      resetData,
       toggleFavorite,
       submitEnquiry,
       updateEnquiry,
@@ -396,7 +385,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addFlat,
       updateFlat,
       deleteFlat,
-      resetData,
       toggleFavorite,
       submitEnquiry,
       updateEnquiry,
