@@ -18,7 +18,6 @@ export const ROLE_LABELS: Record<StaffRole, string> = {
 
 export type StaffAction =
   | "manageStaff"
-  | "resetInventory"
   | "clearEnquiries"
   | "writeFlat"
   | "deleteFlat"
@@ -31,7 +30,6 @@ export type StaffAction =
 
 const PERMISSIONS: Record<StaffAction, readonly StaffRole[]> = {
   manageStaff: ["admin"],
-  resetInventory: ["admin"],
   clearEnquiries: ["admin"],
   writeFlat: ["admin", "agent", "social-media-manager"],
   deleteFlat: ["admin", "agent"],

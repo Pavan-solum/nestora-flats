@@ -1,6 +1,3 @@
-import fs from "fs";
-import path from "path";
-import { SEED_FLATS } from "@/lib/seed";
 import type { Enquiry, EnquiryStatus, Flat } from "@/lib/types";
 import { isEnquiryStatus, needsFollowUpDate } from "@/lib/types";
 import { getSupabaseAdmin } from "./admin";
@@ -266,12 +263,6 @@ export async function clearEnquiryRows() {
   if (!(await hasFollowUpColumns())) await saveFollowups({});
 }
 
-function storageName(url: string) {
-  const match = url.match(/photo-([A-Za-z0-9_-]+)/);
-  const id = match?.[1] ?? Buffer.from(url).toString("base64url").slice(0, 40);
-  return `listings/${id}.jpg`;
-}
-
 function publicImageUrl(objectPath: string) {
   return `${supabaseUrl()}/storage/v1/object/public/${BUCKET}/${objectPath}`;
 }
@@ -295,122 +286,4 @@ export async function uploadListingFile(file: File) {
   });
   if (error) throw new Error(error.message);
   return publicImageUrl(objectPath);
-}
-
-async function ensureBucket() {
-  const admin = getSupabaseAdmin();
-  const { data, error } = await admin.storage.listBuckets();
-  if (error) throw new Error(error.message);
-  if (data?.some((bucket) => bucket.name === BUCKET)) return;
-  const created = await admin.storage.createBucket(BUCKET, { public: true });
-  if (created.error) throw new Error(created.error.message);
-}
-
-async function uploadImage(sourceUrl: string) {
-  if (sourceUrl.includes(`/storage/v1/object/public/${BUCKET}/`)) return sourceUrl;
-  const objectPath = storageName(sourceUrl);
-  const response = await fetch(sourceUrl);
-  if (!response.ok) return sourceUrl;
-  const bytes = Buffer.from(await response.arrayBuffer());
-  const contentType = response.headers.get("content-type")?.split(";")[0] || "image/jpeg";
-  const { error } = await getSupabaseAdmin().storage.from(BUCKET).upload(objectPath, bytes, {
-    upsert: true,
-    contentType,
-  });
-  if (error) throw new Error(error.message);
-  return publicImageUrl(objectPath);
-}
-
-export async function tryApplySchema() {
-  const sql = fs.readFileSync(path.join(process.cwd(), "supabase", "schema.sql"), "utf8");
-  const ref = new URL(supabaseUrl()).hostname.split(".")[0];
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-  const targets = [
-    `https://${ref}.supabase.co/pg/query`,
-    `https://api.supabase.com/v1/projects/${ref}/database/query`,
-  ];
-  for (const target of targets) {
-    const response = await fetch(target, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        apikey: key,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query: sql }),
-    });
-    if (response.ok) {
-      extraColumns = null;
-      return true;
-    }
-  }
-  return false;
-}
-
-async function seedDatabase() {
-  await tryApplySchema();
-  await ensureBucket();
-  const includeExtraColumns = await hasExtraColumns();
-  const sources = [...new Set(SEED_FLATS.flatMap((flat) => flat.images))];
-  const uploaded = new Map<string, string>();
-  for (const source of sources) {
-    uploaded.set(source, await uploadImage(source));
-  }
-
-  const flats = SEED_FLATS.map((flat) => ({
-    ...flat,
-    images: flat.images.map((image) => uploaded.get(image) ?? image),
-    updatedAt: new Date().toISOString(),
-  }));
-
-  const { error } = await getSupabaseAdmin()
-    .from("flats")
-    .upsert(
-      flats.map((flat) => flatToRow(flat, includeExtraColumns)),
-      { onConflict: "id" },
-    );
-  if (error) throw new Error(error.message);
-
-  const extras = await loadExtras();
-  for (const flat of flats) {
-    const extra = extraFromFlat(flat);
-    if (extra) extras[flat.id] = extra;
-  }
-  await saveExtras(extras);
-  return { flats: flats.length, images: uploaded.size, extraColumns: includeExtraColumns };
-}
-
-export async function resetInventory() {
-  const { data, error } = await getSupabaseAdmin().from("flats").select("id, images");
-  if (error) throw new Error(error.message);
-  const rows = data ?? [];
-  const seedIds = new Set(SEED_FLATS.map((flat) => flat.id));
-  const extraRows = rows.filter((row) => !seedIds.has(row.id));
-  const extraPaths = extraRows.flatMap((row) => imagePaths(row.images));
-  if (extraRows.length) {
-    const { error: deleteError } = await getSupabaseAdmin()
-      .from("flats")
-      .delete()
-      .in(
-        "id",
-        extraRows.map((row) => row.id),
-      );
-    if (deleteError) throw new Error(deleteError.message);
-    const extras = await loadExtras();
-    let changed = false;
-    for (const row of extraRows) {
-      if (extras[row.id]) {
-        delete extras[row.id];
-        changed = true;
-      }
-    }
-    if (changed) await saveExtras(extras);
-  }
-  await clearEnquiryRows();
-  const seeded = await seedDatabase();
-  const { data: kept, error: keptError } = await getSupabaseAdmin().from("flats").select("images");
-  if (keptError) throw new Error(keptError.message);
-  const keptPaths = new Set((kept ?? []).flatMap((row) => imagePaths(row.images)));
-  await removeStoragePaths(extraPaths.filter((objectPath) => !keptPaths.has(objectPath)));
-  return { ...seeded, removedFlats: extraRows.length };
 }
