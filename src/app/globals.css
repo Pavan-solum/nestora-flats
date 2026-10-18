@@ -64,9 +64,22 @@ h4,
   letter-spacing: -0.02em;
 }
 
-a {
+a:not(.btn) {
   color: inherit;
   text-decoration: none;
+  cursor: pointer;
+}
+
+a.btn {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:not(:disabled),
+select,
+summary,
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
 }
 
 img {
@@ -130,25 +143,59 @@ img {
   }
 }
 
-.btn-primary {
+.btn-primary,
+a.btn-primary,
+button.btn-primary {
   background: var(--sage);
-  color: white;
-  box-shadow: 0 10px 24px rgba(47, 111, 94, 0.28);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 12px 28px rgba(47, 111, 94, 0.35);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+a.btn-primary:hover,
+button.btn-primary:hover,
+.btn-primary:focus-visible,
+a.btn-primary:focus-visible,
+button.btn-primary:focus-visible {
   background: var(--sage-deep);
+  color: #fff;
 }
 
-.btn-secondary {
-  background: white;
+.btn-primary:disabled,
+button.btn-primary:disabled {
+  color: #fff;
+}
+
+.btn-secondary,
+a.btn-secondary,
+button.btn-secondary {
+  background: #fff;
   color: var(--ink);
   border-color: var(--line);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+a.btn-secondary:hover,
+button.btn-secondary:hover,
+.btn-secondary:focus-visible,
+a.btn-secondary:focus-visible,
+button.btn-secondary:focus-visible {
+  background: #fff;
   border-color: var(--sage);
   color: var(--sage-deep);
+}
+
+.btn-sm {
+  min-height: 2.25rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8125rem;
+}
+
+.btn-danger,
+a.btn-danger,
+button.btn-danger {
+  color: var(--danger);
 }
 
 .btn-ghost {
@@ -161,6 +208,69 @@ img {
   background: #fff5f4;
   color: var(--danger);
   border-color: #f3c6c2;
+}
+
+.map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(47, 111, 94, 0.35);
+  background: rgba(47, 111, 94, 0.08);
+  color: var(--sage-deep);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.map-link:hover {
+  background: rgba(47, 111, 94, 0.14);
+  border-color: var(--sage);
+  color: var(--sage-deep);
+}
+
+.map-link--solid {
+  background: var(--sage);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(47, 111, 94, 0.22);
+}
+
+.map-link--solid:hover {
+  background: var(--sage-deep);
+  color: #fff;
+}
+
+.map-embed {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  border: 1px solid var(--line);
+  background: var(--mist);
+  aspect-ratio: 16 / 10;
+  min-height: 12rem;
+}
+
+.map-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .field {
@@ -246,6 +356,55 @@ img {
 .chip-sage {
   background: rgba(47, 111, 94, 0.12);
   color: var(--sage-deep);
+}
+
+/* Selectable pills (amenities, buy/sell intent) — selected state matches sage buttons */
+.toggle-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+  touch-action: manipulation;
+}
+
+.toggle-chip:hover {
+  border-color: var(--sage);
+  color: var(--ink);
+}
+
+.toggle-chip--on,
+.toggle-chip[aria-pressed="true"] {
+  background: var(--sage);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(47, 111, 94, 0.28);
+}
+
+.toggle-chip--on:hover,
+.toggle-chip[aria-pressed="true"]:hover {
+  background: var(--sage-deep);
+  color: #fff;
+}
+
+a.toggle-chip--on,
+a.toggle-chip--on:hover,
+a.toggle-chip--on:focus-visible {
+  color: #fff;
 }
 
 .chip-gold {
@@ -470,20 +629,10 @@ img {
 }
 
 .chatbot-launcher {
-  display: inline-flex;
-  align-items: center;
   gap: 0.55rem;
   min-height: 3.25rem;
   padding: 0.7rem 1.15rem;
   border: none;
-  border-radius: 999px;
-  background: var(--sage);
-  color: white;
-  font-weight: 700;
-  font-size: 0.95rem;
-  box-shadow: 0 12px 28px rgba(47, 111, 94, 0.35);
-  cursor: pointer;
-  touch-action: manipulation;
 }
 
 .chatbot-launcher__dot {
@@ -676,4 +825,11 @@ img {
     height: 34rem;
   }
 }
+}
+
+/* Unlayered: wins over Tailwind base so primary links stay white on sage */
+a.btn.btn-primary,
+a.btn.btn-primary:hover,
+a.btn.btn-primary:focus-visible {
+  color: #fff;
 }

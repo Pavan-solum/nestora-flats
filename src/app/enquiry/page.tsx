@@ -26,13 +26,15 @@ function EnquiryContent() {
         <div className="mt-4 flex flex-wrap gap-2">
           <Link
             href="/enquiry?intent=buy"
-            className={`chip inline-flex min-h-11 items-center ${defaultIntent === "buy" ? "chip-sage" : ""}`}
+            className={`toggle-chip min-h-11 ${defaultIntent === "buy" ? "toggle-chip--on" : ""}`}
+            aria-current={defaultIntent === "buy" ? "page" : undefined}
           >
             I want to buy
           </Link>
           <Link
             href="/enquiry?intent=sell"
-            className={`chip inline-flex min-h-11 items-center ${defaultIntent === "sell" ? "chip-sage" : ""}`}
+            className={`toggle-chip min-h-11 ${defaultIntent === "sell" ? "toggle-chip--on" : ""}`}
+            aria-current={defaultIntent === "sell" ? "page" : undefined}
           >
             I want to sell
           </Link>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Flat } from "@/lib/types";
 import { formatPrice } from "@/lib/storage";
+import { externalMapUrl, hasMapLocation } from "@/lib/maps";
 
 export function HeroCopy({ featured }: { featured?: Flat | null }) {
   if (featured) {
@@ -15,6 +16,8 @@ export function HeroCopy({ featured }: { featured?: Flat | null }) {
           : `${featured.totalUnits} units`
         : null,
     ].filter((item): item is string => Boolean(item));
+
+    const mapHref = hasMapLocation(featured) ? externalMapUrl(featured) : null;
 
     return (
       <div className="hero-copy flex h-full flex-col justify-center py-2">
@@ -51,6 +54,16 @@ export function HeroCopy({ featured }: { featured?: Flat | null }) {
               Contact agent
             </Link>
           </div>
+          {mapHref && (
+            <a
+              href={mapHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="map-link mt-3 w-fit"
+            >
+              View on map
+            </a>
+          )}
         </div>
       </div>
     );

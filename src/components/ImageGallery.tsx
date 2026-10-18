@@ -25,7 +25,7 @@ export function ImageGallery({ images, title }: { images: string[]; title: strin
             key={`${src}-${index}`}
             type="button"
             onClick={() => setActive(index)}
-            className={`relative aspect-[4/3] w-[28%] min-w-[5.5rem] shrink-0 overflow-hidden rounded-xl border-2 transition sm:w-auto sm:min-w-0 ${
+            className={`relative aspect-[4/3] w-[28%] min-w-[5.5rem] shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 transition sm:w-auto sm:min-w-0 ${
               active === index ? "border-sage" : "border-transparent opacity-80 hover:opacity-100"
             }`}
           >

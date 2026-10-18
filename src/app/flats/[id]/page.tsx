@@ -9,6 +9,12 @@ import { NearbyPlaces } from "@/components/NearbyPlaces";
 import { FlatSkeleton } from "@/components/Skeletons";
 import { useApp } from "@/context/AppContext";
 import { formatPrice, statusLabel } from "@/lib/storage";
+import {
+  externalMapUrl,
+  googleMapsDirectionsUrl,
+  googleMapsEmbedUrl,
+  hasMapLocation,
+} from "@/lib/maps";
 
 export default function FlatDetailPage() {
   const params = useParams<{ id: string }>();
@@ -43,6 +49,10 @@ export default function FlatDetailPage() {
   }
 
   const liked = favorites.includes(flat.id);
+  const showMap = hasMapLocation(flat);
+  const mapHref = showMap ? externalMapUrl(flat) : null;
+  const canEmbed =
+    flat.latitude != null && flat.longitude != null;
 
   const scan = [
     flat.area,
@@ -76,15 +86,27 @@ export default function FlatDetailPage() {
           <p className="mt-2 text-sm text-ink-soft sm:text-base">
             {flat.location}, {flat.area}, {flat.city}
           </p>
-          {flat.mapUrl && (
-            <a
-              href={flat.mapUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-sage"
-            >
-              Open map
-            </a>
+          {showMap && mapHref && (
+            <div className="map-actions">
+              <a
+                href={mapHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="map-link map-link--solid"
+              >
+                View on map
+              </a>
+              {canEmbed && (
+                <a
+                  href={googleMapsDirectionsUrl(flat.latitude!, flat.longitude!)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="map-link"
+                >
+                  Get directions
+                </a>
+              )}
+            </div>
           )}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
@@ -112,6 +134,36 @@ export default function FlatDetailPage() {
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="min-w-0 space-y-8">
           <ImageGallery images={flat.images} title={flat.title} />
+
+          {canEmbed && (
+            <section className="surface overflow-hidden p-4 md:p-5">
+              <h2 className="font-display text-xl sm:text-2xl">Location</h2>
+              <p className="mt-1 text-sm text-ink-soft">
+                {flat.location}, {flat.area}, {flat.city}
+              </p>
+              <div className="map-embed mt-4">
+                <iframe
+                  title={`Map — ${flat.title}`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={googleMapsEmbedUrl(flat.latitude!, flat.longitude!)}
+                  allowFullScreen
+                />
+              </div>
+              {mapHref && (
+                <div className="map-actions !mt-4">
+                  <a
+                    href={mapHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="map-link"
+                  >
+                    Open in Google Maps
+                  </a>
+                </div>
+              )}
+            </section>
+          )}
 
           <section className="surface p-5 md:p-6">
             {scan.length > 0 && (

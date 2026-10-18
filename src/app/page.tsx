@@ -8,6 +8,7 @@ import { ListingImage } from "@/components/ListingImage";
 import { HomeSkeleton } from "@/components/Skeletons";
 import { useApp } from "@/context/AppContext";
 import { formatPrice } from "@/lib/storage";
+import { areaPath, getCityBySlug } from "@/lib/locations";
 
 const MARS_ID = "flat-mars-mount";
 
@@ -38,7 +39,8 @@ const features = [
   },
 ];
 
-const areas = ["JP Nagar", "Whitefield", "Koramangala", "Indiranagar", "HSR Layout"];
+const areaNames = ["JP Nagar", "Whitefield", "Koramangala", "Indiranagar", "HSR Layout"];
+const bengaluru = getCityBySlug("bengaluru");
 
 export default function HomePage() {
   const { ready, flats } = useApp();
@@ -175,16 +177,22 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-6 grid grid-cols-2 gap-3 md:mt-0">
-            {areas.map((area) => (
-              <Link
-                key={area}
-                href={`/explore/bengaluru/${area.toLowerCase().replace(/\s+/g, "-")}`}
-                className="rounded-2xl border border-line bg-mist/70 px-4 py-4 text-sm font-semibold transition hover:border-sage hover:bg-white"
-              >
-                {area}
-                <span className="mt-1 block text-xs font-normal text-ink-soft">Bengaluru</span>
-              </Link>
-            ))}
+            {areaNames.map((name) => {
+              const area = bengaluru?.areas.find((item) => item.name === name);
+              const href = area
+                ? areaPath("bengaluru", area.slug)
+                : `/explore/bengaluru/${name.toLowerCase().replace(/\s+/g, "-")}`;
+              return (
+                <Link
+                  key={name}
+                  href={href}
+                  className="cursor-pointer rounded-2xl border border-line bg-mist/70 px-4 py-4 text-sm font-semibold transition hover:border-sage hover:bg-white"
+                >
+                  {name}
+                  <span className="mt-1 block text-xs font-normal text-ink-soft">Bengaluru</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

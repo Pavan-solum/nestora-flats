@@ -376,7 +376,8 @@ export function FlatForm({ initial, onSubmit, submitLabel = "Save flat" }: Props
               key={item}
               type="button"
               onClick={() => toggleAmenity(item)}
-              className={`chip ${amenitySet.has(item) ? "chip-sage" : ""}`}
+              aria-pressed={amenitySet.has(item)}
+              className={`toggle-chip ${amenitySet.has(item) ? "toggle-chip--on" : ""}`}
             >
               {item}
             </button>
